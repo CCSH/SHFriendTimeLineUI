@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   type = "1"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.ExceptionBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            scope = "0"
+            stopOnStyle = "0">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../csh/Desktop/Git/SHFriendTimeLineUI/SHFriendTimeLineUI/SHFriendTimeLine/View(&#x89c6;&#x56fe;)/SHPublish(&#x53d1;&#x5e03;&#x754c;&#x9762;)/ZLPhotoLib/Classes/ZLPhotoBrowser/Models/ZLPhotoPickerBrowserPhoto.m"
+            timestampString = "513753443.879379"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "63"
+            endingLineNumber = "63"
+            landmarkName = "+photoAnyImageObjWith:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../csh/Desktop/Git/SHFriendTimeLineUI/SHFriendTimeLineUI/SHFriendTimeLine/View(&#x89c6;&#x56fe;)/SHPublish(&#x53d1;&#x5e03;&#x754c;&#x9762;)/ZLPhotoLib/Classes/ZLPhotoBrowser/ViewControllers/ZLPhotoPickerBrowserViewController.m"
+            timestampString = "513768153.295911"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "326"
+            endingLineNumber = "326"
+            landmarkName = "-setupReload"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>
