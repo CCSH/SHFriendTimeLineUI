@@ -13,11 +13,15 @@
 #import "SHFriendHeadView.h"
 #import "YYFPSLabel.h"
 #import "SHPhotoBrowserViewController.h"
+#import "XJJRefresh.h"
+#import "MJRefresh.h"
 
 @interface SHFriendTimeLineTableViewController ()<SHFriendTimeLineCellDelegate,SHFriendHeadViewDelegate>
 
 //界面数据
 @property (nonatomic, strong) NSMutableArray <SHFriendTimeLineFrame *>*dataSoure;
+//头部视图
+@property (nonatomic, strong) SHFriendHeadView *headerView;
 //FPS
 @property (nonatomic, strong) YYFPSLabel *fpsLabel;
 
@@ -60,23 +64,27 @@
     
     //配置内容
     [self setupContent];
+    //配置刷新
+    [self setRefresh];
 }
 
 #pragma mark 配置导航栏
 - (void)setupNav{
     
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"发布" style:UIBarButtonItemStylePlain target:self action:@selector(rightClick)];
+    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera target:self action:@selector(rightClick)];
+    self.navigationItem.rightBarButtonItem = item;
 }
 
 #pragma mark 配置头部
 - (void)setupHead{
     
-    SHFriendHeadView *headerView = [[SHFriendHeadView alloc] initWithFrame:CGRectMake(0, 0, kSHWidth, 340)];
-    headerView.userName = UserName;
-    headerView.userAvatar = [NSString stringWithFormat:@"icon%u.jpg",arc4random() % 4];
-    headerView.backgroundUrl = @"pic0.jpg";
-    headerView.delegate = self;
-    self.tableView.tableHeaderView = headerView;
+    self.headerView = [[SHFriendHeadView alloc] initWithFrame:CGRectMake(0, 0, kSHWidth, 340)];
+    self.headerView.userName = UserName;
+    self.headerView.userAvatar = [NSString stringWithFormat:@"icon%u.jpg",arc4random() % 4];
+    self.headerView.backgroundUrl = @"pic0.jpg";
+    self.headerView.delegate = self;
+    
+    self.tableView.tableHeaderView = self.headerView;
 }
 
 #pragma mark 配置内容
@@ -85,6 +93,68 @@
     self.dataSoure = [NSMutableArray arrayWithArray:[self getFriendDataWithNum:20]];
     
     [self.tableView reloadData];
+}
+
+#pragma mark - 配置刷新、加载
+- (void)setRefresh{
+    
+    UIImageView *refreshView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, 25, 25)];
+    refreshView.image = [UIImage imageNamed:@"refresh_icon.png"];
+    
+    XJJHolyCrazyHeader *crazyRefresh = [XJJHolyCrazyHeader holyCrazyCustomHeaderWithCustomContentView:refreshView];
+    crazyRefresh.refreshingPosition = CGPointMake(20, 80);
+    crazyRefresh.startPosition = CGPointMake(20, 39);
+    
+    __weak typeof(self) weakSelf = self;
+    [self.tableView add_xjj_refreshHeader:crazyRefresh refreshBlock:^{
+        
+        [weakSelf.tableView setRefreshState:XJJRefreshStateIdle];
+        
+        [weakSelf.tableView replace_xjj_refreshBlock:^{
+            
+            [weakSelf loadNewData];
+        }];
+    }];
+    
+    self.tableView.mj_footer = [MJRefreshAutoNormalFooter footerWithRefreshingTarget:self refreshingAction:@selector(loadOldData)];
+}
+
+#pragma mark - 刷新数据
+- (void)loadNewData{
+    NSLog(@"刷新数据");
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        
+        NSArray *temp = [self getFriendDataWithNum:5];
+        
+        for (SHFriendTimeLineFrame *model in temp) {
+            [self.dataSoure insertObject:model atIndex:0];
+        }
+        
+        
+        [self.tableView reloadData];
+        
+        [self.tableView end_xjj_refresh];
+        
+    });
+}
+
+#pragma mark - 加载数据
+- (void)loadOldData{
+    NSLog(@"加载数据");
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        
+        NSArray *temp = [self getFriendDataWithNum:5];
+        
+        for (SHFriendTimeLineFrame *model in temp) {
+            [self.dataSoure insertObject:model atIndex:0];
+        }
+        
+        
+        [self.tableView reloadData];
+        
+        [self.tableView.mj_footer endRefreshing];
+        
+    });
 }
 
 #pragma mark - 导航栏点击
