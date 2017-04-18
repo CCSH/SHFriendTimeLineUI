@@ -79,13 +79,16 @@
     }
     
     //5、 时间
-    _timeF = CGRectMake(Content_X, Content_Y, Content_MaxW, kTimeAndLikeH);
+    _timeF = CGRectMake(Content_X, Content_Y, Content_MaxW, kTimeAndLikeAndDeleteH);
     
-    //6、 点赞按钮
-    _likeF = CGRectMake(kSHWidth - kLikeW - kContentMargin, Content_Y, kLikeW, kTimeAndLikeH);
-    Content_Y += kTimeAndLikeH + kUDMargin;
+    //6、 删除
+    _deleteF = CGRectMake(Content_X + 100, Content_Y, kDeleteW, kTimeAndLikeAndDeleteH);
     
-    //7、 点赞列表
+    //7、 点赞按钮
+    _likeF = CGRectMake(kSHWidth - kLikeW - kContentMargin, Content_Y, kLikeW, kTimeAndLikeAndDeleteH);
+    Content_Y += kTimeAndLikeAndDeleteH + kUDMargin;
+    
+    //8、 点赞列表
     if (message.likeListArr.count) {//是否有点赞人
         
         NSString *likeList = [message.likeListArr componentsJoinedByString:@"、"];
@@ -96,7 +99,7 @@
         Content_Y += _likeListF.size.height + 1;
     }
     
-    //8、 评论列表
+    //9、 评论列表
     if (message.commentArr.count) {//是否有评论人
         
         __block CGSize commentSize = CGSizeMake(Content_MaxW - 2*kLRMargin, 0);
@@ -136,7 +139,7 @@
         Content_Y += _commentF.size.height + kUDMargin;
     }
     
-    //9、 Cell高度
+    //10、 Cell高度
     _cellHeight = Content_Y + kContentMargin;
 }
 

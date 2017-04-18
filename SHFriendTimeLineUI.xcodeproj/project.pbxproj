@@ -7,8 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5C4040441EA60E8300750688 /* chat_face.png in Resources */ = {isa = PBXBuildFile; fileRef = 5C4040431EA60E8300750688 /* chat_face.png */; };
+		5C4040461EA60E8A00750688 /* chat_keyboard.png in Resources */ = {isa = PBXBuildFile; fileRef = 5C4040451EA60E8A00750688 /* chat_keyboard.png */; };
 		5C6015091E9F98BE004FE4A1 /* placeholderImage@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5C6015081E9F98BE004FE4A1 /* placeholderImage@2x.png */; };
 		5C60150D1EA070E8004FE4A1 /* SHClickTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C60150C1EA070E8004FE4A1 /* SHClickTextView.m */; };
+		5C6D8D3D1EA5FF550061A851 /* NSString+Emoji.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C6D8D2E1EA5FF550061A851 /* NSString+Emoji.m */; };
+		5C6D8D3E1EA5FF550061A851 /* UIButton+RemoveHighlightEffect.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C6D8D301EA5FF550061A851 /* UIButton+RemoveHighlightEffect.m */; };
+		5C6D8D3F1EA5FF550061A851 /* UIView+Extension.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C6D8D321EA5FF550061A851 /* UIView+Extension.m */; };
+		5C6D8D401EA5FF550061A851 /* SHEmotionModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C6D8D351EA5FF550061A851 /* SHEmotionModel.m */; };
+		5C6D8D411EA5FF550061A851 /* SHEmotionKeyboard.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 5C6D8D371EA5FF550061A851 /* SHEmotionKeyboard.bundle */; };
+		5C6D8D421EA5FF550061A851 /* SHEmotionKeyboard.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C6D8D3A1EA5FF550061A851 /* SHEmotionKeyboard.m */; };
+		5C6D8D431EA5FF550061A851 /* SHEmotionTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C6D8D3C1EA5FF550061A851 /* SHEmotionTool.m */; };
+		5C6D8D461EA5FF8B0061A851 /* SHCommtetInput.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C6D8D451EA5FF8B0061A851 /* SHCommtetInput.m */; };
 		5C6F564F1E9E1A2F000E7E1C /* icon1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 5C6F56411E9E1A2F000E7E1C /* icon1.jpg */; };
 		5C6F56501E9E1A2F000E7E1C /* icon2.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 5C6F56421E9E1A2F000E7E1C /* icon2.jpg */; };
 		5C6F56511E9E1A2F000E7E1C /* icon3.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 5C6F56431E9E1A2F000E7E1C /* icon3.jpg */; };
@@ -107,7 +117,7 @@
 		5CE7DF6F1EA46AD100D83D6E /* XJJRefreshControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 5CE7DF6E1EA46AD100D83D6E /* XJJRefreshControl.m */; };
 		5CE7DF721EA46AF000D83D6E /* XJJHolyCrazyHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = 5CE7DF711EA46AF000D83D6E /* XJJHolyCrazyHeader.m */; };
 		5CEB1FB91E309889008BD02E /* SHFriendTimeLineTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5CEB1F841E309889008BD02E /* SHFriendTimeLineTableViewCell.m */; };
-		5CEB1FBA1E309889008BD02E /* SHFriendTimeLineTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5CEB1F861E309889008BD02E /* SHFriendTimeLineTableViewController.m */; };
+		5CEB1FBA1E309889008BD02E /* SHFriendTimeLineViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5CEB1F861E309889008BD02E /* SHFriendTimeLineViewController.m */; };
 		5CEB1FBB1E309889008BD02E /* SHFriendTimeLine.m in Sources */ = {isa = PBXBuildFile; fileRef = 5CEB1F891E309889008BD02E /* SHFriendTimeLine.m */; };
 		5CEB1FBC1E309889008BD02E /* SHFriendTimeLineComment.m in Sources */ = {isa = PBXBuildFile; fileRef = 5CEB1F8B1E309889008BD02E /* SHFriendTimeLineComment.m */; };
 		5CEB1FBD1E309889008BD02E /* SHFriendTimeLineFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 5CEB1F8D1E309889008BD02E /* SHFriendTimeLineFrame.m */; };
@@ -127,9 +137,26 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5C4040431EA60E8300750688 /* chat_face.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_face.png; sourceTree = "<group>"; };
+		5C4040451EA60E8A00750688 /* chat_keyboard.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_keyboard.png; sourceTree = "<group>"; };
 		5C6015081E9F98BE004FE4A1 /* placeholderImage@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "placeholderImage@2x.png"; sourceTree = "<group>"; };
 		5C60150B1EA070E8004FE4A1 /* SHClickTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SHClickTextView.h; sourceTree = "<group>"; };
 		5C60150C1EA070E8004FE4A1 /* SHClickTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SHClickTextView.m; sourceTree = "<group>"; };
+		5C6D8D2D1EA5FF550061A851 /* NSString+Emoji.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Emoji.h"; sourceTree = "<group>"; };
+		5C6D8D2E1EA5FF550061A851 /* NSString+Emoji.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Emoji.m"; sourceTree = "<group>"; };
+		5C6D8D2F1EA5FF550061A851 /* UIButton+RemoveHighlightEffect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIButton+RemoveHighlightEffect.h"; sourceTree = "<group>"; };
+		5C6D8D301EA5FF550061A851 /* UIButton+RemoveHighlightEffect.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIButton+RemoveHighlightEffect.m"; sourceTree = "<group>"; };
+		5C6D8D311EA5FF550061A851 /* UIView+Extension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+Extension.h"; sourceTree = "<group>"; };
+		5C6D8D321EA5FF550061A851 /* UIView+Extension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Extension.m"; sourceTree = "<group>"; };
+		5C6D8D341EA5FF550061A851 /* SHEmotionModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SHEmotionModel.h; sourceTree = "<group>"; };
+		5C6D8D351EA5FF550061A851 /* SHEmotionModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SHEmotionModel.m; sourceTree = "<group>"; };
+		5C6D8D371EA5FF550061A851 /* SHEmotionKeyboard.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = SHEmotionKeyboard.bundle; sourceTree = "<group>"; };
+		5C6D8D391EA5FF550061A851 /* SHEmotionKeyboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SHEmotionKeyboard.h; sourceTree = "<group>"; };
+		5C6D8D3A1EA5FF550061A851 /* SHEmotionKeyboard.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SHEmotionKeyboard.m; sourceTree = "<group>"; };
+		5C6D8D3B1EA5FF550061A851 /* SHEmotionTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SHEmotionTool.h; sourceTree = "<group>"; };
+		5C6D8D3C1EA5FF550061A851 /* SHEmotionTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SHEmotionTool.m; sourceTree = "<group>"; };
+		5C6D8D441EA5FF8B0061A851 /* SHCommtetInput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SHCommtetInput.h; sourceTree = "<group>"; };
+		5C6D8D451EA5FF8B0061A851 /* SHCommtetInput.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SHCommtetInput.m; sourceTree = "<group>"; };
 		5C6F56411E9E1A2F000E7E1C /* icon1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = icon1.jpg; sourceTree = "<group>"; };
 		5C6F56421E9E1A2F000E7E1C /* icon2.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = icon2.jpg; sourceTree = "<group>"; };
 		5C6F56431E9E1A2F000E7E1C /* icon3.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = icon3.jpg; sourceTree = "<group>"; };
@@ -311,8 +338,8 @@
 		5CE7DF711EA46AF000D83D6E /* XJJHolyCrazyHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XJJHolyCrazyHeader.m; sourceTree = "<group>"; };
 		5CEB1F831E309889008BD02E /* SHFriendTimeLineTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SHFriendTimeLineTableViewCell.h; sourceTree = "<group>"; };
 		5CEB1F841E309889008BD02E /* SHFriendTimeLineTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SHFriendTimeLineTableViewCell.m; sourceTree = "<group>"; };
-		5CEB1F851E309889008BD02E /* SHFriendTimeLineTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SHFriendTimeLineTableViewController.h; sourceTree = "<group>"; };
-		5CEB1F861E309889008BD02E /* SHFriendTimeLineTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SHFriendTimeLineTableViewController.m; sourceTree = "<group>"; };
+		5CEB1F851E309889008BD02E /* SHFriendTimeLineViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SHFriendTimeLineViewController.h; sourceTree = "<group>"; };
+		5CEB1F861E309889008BD02E /* SHFriendTimeLineViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SHFriendTimeLineViewController.m; sourceTree = "<group>"; };
 		5CEB1F881E309889008BD02E /* SHFriendTimeLine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SHFriendTimeLine.h; sourceTree = "<group>"; };
 		5CEB1F891E309889008BD02E /* SHFriendTimeLine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SHFriendTimeLine.m; sourceTree = "<group>"; };
 		5CEB1F8A1E309889008BD02E /* SHFriendTimeLineComment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SHFriendTimeLineComment.h; sourceTree = "<group>"; };
@@ -361,6 +388,70 @@
 				5C60150C1EA070E8004FE4A1 /* SHClickTextView.m */,
 			);
 			path = "SHLabelClick(文字点击)";
+			sourceTree = "<group>";
+		};
+		5C6D8D2A1EA5FF350061A851 /* SHCommtetInput */ = {
+			isa = PBXGroup;
+			children = (
+				5C4040451EA60E8A00750688 /* chat_keyboard.png */,
+				5C4040431EA60E8300750688 /* chat_face.png */,
+				5C6D8D441EA5FF8B0061A851 /* SHCommtetInput.h */,
+				5C6D8D451EA5FF8B0061A851 /* SHCommtetInput.m */,
+			);
+			name = SHCommtetInput;
+			path = ../../../../../csh/Desktop/Git/SHFriendTimeLineUI/SHFriendTimeLineUI/SHCommtetInput;
+			sourceTree = "<group>";
+		};
+		5C6D8D2B1EA5FF550061A851 /* SHEmotionKeyboard */ = {
+			isa = PBXGroup;
+			children = (
+				5C6D8D2C1EA5FF550061A851 /* Helper(帮助类) */,
+				5C6D8D331EA5FF550061A851 /* Model(模型) */,
+				5C6D8D361EA5FF550061A851 /* Resources(资源) */,
+				5C6D8D381EA5FF550061A851 /* View(视图) */,
+			);
+			path = SHEmotionKeyboard;
+			sourceTree = "<group>";
+		};
+		5C6D8D2C1EA5FF550061A851 /* Helper(帮助类) */ = {
+			isa = PBXGroup;
+			children = (
+				5C6D8D2D1EA5FF550061A851 /* NSString+Emoji.h */,
+				5C6D8D2E1EA5FF550061A851 /* NSString+Emoji.m */,
+				5C6D8D2F1EA5FF550061A851 /* UIButton+RemoveHighlightEffect.h */,
+				5C6D8D301EA5FF550061A851 /* UIButton+RemoveHighlightEffect.m */,
+				5C6D8D311EA5FF550061A851 /* UIView+Extension.h */,
+				5C6D8D321EA5FF550061A851 /* UIView+Extension.m */,
+			);
+			path = "Helper(帮助类)";
+			sourceTree = "<group>";
+		};
+		5C6D8D331EA5FF550061A851 /* Model(模型) */ = {
+			isa = PBXGroup;
+			children = (
+				5C6D8D341EA5FF550061A851 /* SHEmotionModel.h */,
+				5C6D8D351EA5FF550061A851 /* SHEmotionModel.m */,
+			);
+			path = "Model(模型)";
+			sourceTree = "<group>";
+		};
+		5C6D8D361EA5FF550061A851 /* Resources(资源) */ = {
+			isa = PBXGroup;
+			children = (
+				5C6D8D371EA5FF550061A851 /* SHEmotionKeyboard.bundle */,
+			);
+			path = "Resources(资源)";
+			sourceTree = "<group>";
+		};
+		5C6D8D381EA5FF550061A851 /* View(视图) */ = {
+			isa = PBXGroup;
+			children = (
+				5C6D8D391EA5FF550061A851 /* SHEmotionKeyboard.h */,
+				5C6D8D3A1EA5FF550061A851 /* SHEmotionKeyboard.m */,
+				5C6D8D3B1EA5FF550061A851 /* SHEmotionTool.h */,
+				5C6D8D3C1EA5FF550061A851 /* SHEmotionTool.m */,
+			);
+			path = "View(视图)";
 			sourceTree = "<group>";
 		};
 		5C6F56401E9E1A2F000E7E1C /* icon */ = {
@@ -647,6 +738,8 @@
 		5C9C55521E2610DE005D9217 /* SHFriendTimeLineUI */ = {
 			isa = PBXGroup;
 			children = (
+				5C6D8D2B1EA5FF550061A851 /* SHEmotionKeyboard */,
+				5C6D8D2A1EA5FF350061A851 /* SHCommtetInput */,
 				5CEB1FD01E3098F0008BD02E /* FPS */,
 				5CEB1F801E309889008BD02E /* SHFriendTimeLine */,
 				5C9C55561E2610DE005D9217 /* AppDelegate.h */,
@@ -845,8 +938,8 @@
 			children = (
 				5C6F56EB1E9F0CFE000E7E1C /* SHPublishController(发布界面) */,
 				5CEB1F821E309889008BD02E /* Cell */,
-				5CEB1F851E309889008BD02E /* SHFriendTimeLineTableViewController.h */,
-				5CEB1F861E309889008BD02E /* SHFriendTimeLineTableViewController.m */,
+				5CEB1F851E309889008BD02E /* SHFriendTimeLineViewController.h */,
+				5CEB1F861E309889008BD02E /* SHFriendTimeLineViewController.m */,
 			);
 			path = "Controller(界面)";
 			sourceTree = "<group>";
@@ -1080,11 +1173,13 @@
 				5CEB1FC11E309889008BD02E /* AlbumComment@3x.png in Resources */,
 				5C6F56531E9E1A2F000E7E1C /* icon0.jpg in Resources */,
 				5C6F56521E9E1A2F000E7E1C /* icon4.jpg in Resources */,
+				5C4040461EA60E8A00750688 /* chat_keyboard.png in Resources */,
 				5CEB1FC31E309889008BD02E /* AlbumOperateMore.png in Resources */,
 				5C6F56511E9E1A2F000E7E1C /* icon3.jpg in Resources */,
 				5C6F565A1E9E1A2F000E7E1C /* pic6.jpg in Resources */,
 				5CE7DF1E1EA4555500D83D6E /* MJRefresh.bundle in Resources */,
 				5C6F56571E9E1A2F000E7E1C /* pic3.jpg in Resources */,
+				5C6D8D411EA5FF550061A851 /* SHEmotionKeyboard.bundle in Resources */,
 				5C9C55601E2610DE005D9217 /* Assets.xcassets in Resources */,
 				5C6F56EA1E9F0CBC000E7E1C /* ZLPhotoLib.bundle in Resources */,
 				5C9C555E1E2610DE005D9217 /* Main.storyboard in Resources */,
@@ -1093,6 +1188,7 @@
 				5C6F56591E9E1A2F000E7E1C /* pic5.jpg in Resources */,
 				5C6F564F1E9E1A2F000E7E1C /* icon1.jpg in Resources */,
 				5CE7DEDB1EA4529600D83D6E /* refresh_icon@2x.png in Resources */,
+				5C4040441EA60E8300750688 /* chat_face.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1103,12 +1199,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5C6D8D3D1EA5FF550061A851 /* NSString+Emoji.m in Sources */,
 				5C6F56D11E9F0CBC000E7E1C /* UIView+WebCacheOperation.m in Sources */,
 				5CEB1FD31E3098F0008BD02E /* YYFPSLabel.m in Sources */,
 				5CE7DF1A1EA4555500D83D6E /* MJRefreshBackStateFooter.m in Sources */,
 				5C6F56CB1E9F0CBC000E7E1C /* SDWebImagePrefetcher.m in Sources */,
 				5CD4B0091E9F444500FF2051 /* SHPhotoTool.m in Sources */,
 				5CE7DF151EA4555500D83D6E /* MJRefreshAutoGifFooter.m in Sources */,
+				5C6D8D421EA5FF550061A851 /* SHEmotionKeyboard.m in Sources */,
 				5C6F56E31E9F0CBC000E7E1C /* ZLPhotoPickerGroupViewController.m in Sources */,
 				5C6F56CF1E9F0CBC000E7E1C /* UIImageView+HighlightedWebCache.m in Sources */,
 				5C6F56C91E9F0CBC000E7E1C /* SDWebImageDownloaderOperation.m in Sources */,
@@ -1116,6 +1214,7 @@
 				5C6F56DC1E9F0CBC000E7E1C /* ZLPhotoPickerCustomToolBarView.m in Sources */,
 				5C9C555B1E2610DE005D9217 /* ViewController.m in Sources */,
 				5CE7DF181EA4555500D83D6E /* MJRefreshBackGifFooter.m in Sources */,
+				5C6D8D461EA5FF8B0061A851 /* SHCommtetInput.m in Sources */,
 				5C6F56E81E9F0CBC000E7E1C /* ZLPhotoPickerGroupTableViewCell.m in Sources */,
 				5CE7DF111EA4555500D83D6E /* MJRefreshBackFooter.m in Sources */,
 				5CD4B00E1E9F44C200FF2051 /* SHPhotoBrowserModel.m in Sources */,
@@ -1140,16 +1239,19 @@
 				5C6F56D21E9F0CBC000E7E1C /* CSHTextView.m in Sources */,
 				5CEB1FBB1E309889008BD02E /* SHFriendTimeLine.m in Sources */,
 				5CE7DF1B1EA4555500D83D6E /* MJRefreshGifHeader.m in Sources */,
-				5CEB1FBA1E309889008BD02E /* SHFriendTimeLineTableViewController.m in Sources */,
+				5CEB1FBA1E309889008BD02E /* SHFriendTimeLineViewController.m in Sources */,
 				5CE7DF121EA4555500D83D6E /* MJRefreshComponent.m in Sources */,
 				5CE7DF191EA4555500D83D6E /* MJRefreshBackNormalFooter.m in Sources */,
+				5C6D8D431EA5FF550061A851 /* SHEmotionTool.m in Sources */,
 				5C6F56DE1E9F0CBC000E7E1C /* ZLPhotoPickerDatas.m in Sources */,
+				5C6D8D3F1EA5FF550061A851 /* UIView+Extension.m in Sources */,
 				5CE7DF241EA4555500D83D6E /* README.md in Sources */,
 				5CE7DF1F1EA4555500D83D6E /* MJRefreshConst.m in Sources */,
 				5C6F56DD1E9F0CBC000E7E1C /* ZLPhotoAssets.m in Sources */,
 				5C6F56CA1E9F0CBC000E7E1C /* SDWebImageManager.m in Sources */,
 				5C6F56D81E9F0CBC000E7E1C /* ZLPhotoPickerBrowserViewController.m in Sources */,
 				5C6F56E61E9F0CBC000E7E1C /* ZLPhotoPickerCollectionViewCell.m in Sources */,
+				5C6D8D3E1EA5FF550061A851 /* UIButton+RemoveHighlightEffect.m in Sources */,
 				5C6F56C31E9F0CBC000E7E1C /* DALabeledCircularProgressView.m in Sources */,
 				5CEB1FBC1E309889008BD02E /* SHFriendTimeLineComment.m in Sources */,
 				5C6F56C81E9F0CBC000E7E1C /* SDWebImageDownloader.m in Sources */,
@@ -1158,6 +1260,7 @@
 				5C6F56E11E9F0CBC000E7E1C /* ZLNavigationController.m in Sources */,
 				5C6F56D61E9F0CBC000E7E1C /* ZLPhotoRect.m in Sources */,
 				5C6F56CD1E9F0CBC000E7E1C /* UIImage+GIF.m in Sources */,
+				5C6D8D401EA5FF550061A851 /* SHEmotionModel.m in Sources */,
 				5CEB1FCA1E309889008BD02E /* UIView+Extension.m in Sources */,
 				5CE7DF6A1EA46A9A00D83D6E /* UIScrollViewContentOffsetObserver.m in Sources */,
 				5CE7DF231EA4555500D83D6E /* UIView+MJExtension.m in Sources */,

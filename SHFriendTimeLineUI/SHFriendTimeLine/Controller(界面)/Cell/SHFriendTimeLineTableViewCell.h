@@ -61,6 +61,9 @@
 //时间
 @property (nonatomic, retain) UILabel *timeLabel;
 #pragma mark
+//删除
+@property (nonatomic, retain) UIButton *deleteBtn;
+#pragma mark
 //点赞、评论
 @property (nonatomic, retain) UIButton *likeBtn;
 #pragma mark

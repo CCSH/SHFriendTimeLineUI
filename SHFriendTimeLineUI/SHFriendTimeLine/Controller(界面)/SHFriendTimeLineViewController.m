@@ -1,12 +1,12 @@
 //
-//  SHFriendTimeLineTableViewController.m
+//  SHFriendTimeLineViewController.m
 //  SHFriendTimeLineUI
 //
 //  Created by CSH on 2017/1/11.
 //  Copyright © 2017年 CSH. All rights reserved.
 //
 
-#import "SHFriendTimeLineTableViewController.h"
+#import "SHFriendTimeLineViewController.h"
 #import "SHPublishViewController.h"
 #import "SHFriendTimeLineTableViewCell.h"
 #import "SHFriendTimeLineHeader.h"
@@ -15,19 +15,64 @@
 #import "SHPhotoBrowserViewController.h"
 #import "XJJRefresh.h"
 #import "MJRefresh.h"
+#import "SHCommtetInput.h"
 
-@interface SHFriendTimeLineTableViewController ()<SHFriendTimeLineCellDelegate,SHFriendHeadViewDelegate>
+//背景自己
+#define kActionSheet_BackGroup_Me_Tag 1
+//背景其他人
+#define kActionSheet_BackGroup_Other_Tag 2
+//删除评论
+#define kActionSheet_Delete_Tag 3
 
+@interface SHFriendTimeLineViewController ()
+<SHFriendTimeLineCellDelegate,
+SHFriendHeadViewDelegate,
+UIActionSheetDelegate,
+UITableViewDelegate,
+UITableViewDataSource>
+
+@property (nonatomic, strong) UITableView *tableView;
 //界面数据
 @property (nonatomic, strong) NSMutableArray <SHFriendTimeLineFrame *>*dataSoure;
 //头部视图
 @property (nonatomic, strong) SHFriendHeadView *headerView;
 //FPS
 @property (nonatomic, strong) YYFPSLabel *fpsLabel;
+//评论输入框
+@property (nonatomic, strong) SHCommtetInput *commentInput;
+
+//删除评论暂存
+@property (nonatomic, strong) NSDictionary *deleteDic;
 
 @end
 
-@implementation SHFriendTimeLineTableViewController
+@implementation SHFriendTimeLineViewController
+
+#pragma mark - 懒加载
+- (UITableView *)tableView {
+    if (!_tableView) {
+        _tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, 0, SHWidth, SHHeight) style:UITableViewStylePlain];
+        _tableView.backgroundColor = [UIColor whiteColor];
+        _tableView.delegate = self;
+        _tableView.dataSource = self;
+        [self.view addSubview:_tableView];
+    }
+    return _tableView;
+}
+
+- (SHCommtetInput *)commentInput{
+    
+    if (!_commentInput) {
+        _commentInput = [SHCommtetInput sharedSHCommtetInput];
+        _commentInput.frame = CGRectMake(0, self.view.frame.size.height - 50, SHWidth, 50);
+        _commentInput.hidden = YES;
+        [_commentInput reloadView];
+        [self.view addSubview:_commentInput];
+        [self.view bringSubviewToFront:_commentInput];
+    }
+    
+    return _commentInput;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -61,7 +106,6 @@
     [self setupNav];
     //配置头部
     [self setupHead];
-    
     //配置内容
     [self setupContent];
     //配置刷新
@@ -71,17 +115,29 @@
 #pragma mark 配置导航栏
 - (void)setupNav{
     
-    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera target:self action:@selector(rightClick)];
-    self.navigationItem.rightBarButtonItem = item;
+    switch (self.type) {
+        case SHFriendTimeLineViewType_All://所有
+        {
+            UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera target:self action:@selector(rightClick)];
+            self.navigationItem.rightBarButtonItem = item;
+        }
+            break;
+        case SHFriendTimeLineViewType_One://个人
+            
+            break;
+        default:
+            break;
+    }
+    
 }
 
 #pragma mark 配置头部
 - (void)setupHead{
     
     self.headerView = [[SHFriendHeadView alloc] initWithFrame:CGRectMake(0, 0, kSHWidth, 340)];
-    self.headerView.userName = UserName;
+    self.headerView.userName = self.userInfo;
     self.headerView.userAvatar = [NSString stringWithFormat:@"icon%u.jpg",arc4random() % 4];
-    self.headerView.backgroundUrl = @"pic0.jpg";
+    self.headerView.backgroundUrl = [NSString stringWithFormat:@"pic%u.jpg",arc4random() % 8];
     self.headerView.delegate = self;
     
     self.tableView.tableHeaderView = self.headerView;
@@ -180,12 +236,31 @@
     
     NSMutableArray *temp = [[NSMutableArray alloc]init];
     for (int i = 0; i < num; i++) {
-        [temp addObject:[self addFriendDataWithIndex:arc4random() % 9]];
+        
+        SHFriendTimeLine *message = [self getFriendDataWithIndex:arc4random() % 9];
+        SHFriendTimeLineFrame *messageFrame = [[SHFriendTimeLineFrame alloc]init];
+        messageFrame.message = message;
+        
+        switch (self.type) {
+            case SHFriendTimeLineViewType_All://所有
+            {
+                
+            }
+                break;
+            case SHFriendTimeLineViewType_One:
+            {
+                messageFrame.message.friendNick = self.userInfo;
+            }
+            default:
+                break;
+        }
+        
+        [temp addObject:messageFrame];
     }
     return temp;
 }
 
-- (SHFriendTimeLineFrame *)addFriendDataWithIndex:(NSInteger )index{
+- (SHFriendTimeLine *)getFriendDataWithIndex:(NSInteger )index{
     
     SHFriendTimeLine *model = [[SHFriendTimeLine alloc]init];
 
@@ -244,7 +319,7 @@
             break;
         case 4:
         {
-            model.friendNick = @"爱谁谁";
+            model.friendNick = @"那啥";
             model.friendAvatar = [NSString stringWithFormat:@"icon%u.jpg",arc4random() % 5];
             model.messageTime = @"2016-1-1";
             model.messageContent = @"test=====2345678654了圣诞节阿弗莱克就撒；来得快计费；拉萨肯德基菲利克斯敬爱的浪费空间撒即可好吧";
@@ -303,7 +378,7 @@
             break;
         case 7:
         {
-            model.friendNick = @"哈哈";
+            model.friendNick = @"那啥";
             model.friendAvatar = [NSString stringWithFormat:@"icon%u.jpg",arc4random() % 5];
             model.messageTime = @"2016-1-1";
             model.messageContent = @"测试=====http://www.jianshu.com/u/787eb6539a62";
@@ -340,10 +415,7 @@
         model.messageContent = @"我就看看还有谁";
     }
     
-    SHFriendTimeLineFrame *message = [[SHFriendTimeLineFrame alloc]init];
-    message.message = model;
-    
-    return message;
+    return model;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -380,18 +452,113 @@
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
+    //移除点赞
     [[SHLikeAndCommentView shareSHLikeAndCommentView] removeFromSuperview];
+    //关闭输入框
+    [self.commentInput hideSHCommtetInput];
+}
+
+#pragma mark - UIActionSheetDelegate
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex{
+    
+    switch (actionSheet.tag) {
+        case kActionSheet_BackGroup_Me_Tag://自己背景
+        {
+            switch (buttonIndex) {
+                    case 0://相册
+                {
+                    NSLog(@"点击了==相册");
+                }
+                    break;
+                    case 1://相机
+                {
+                    NSLog(@"点击了==相机");
+                }
+                    
+                default:
+                    break;
+            }
+        }
+            break;
+        case kActionSheet_BackGroup_Other_Tag://别人背景
+        {
+            switch (buttonIndex) {
+                    case 0://保存到相册
+                {
+                    NSLog(@"点击了==保存到相册");
+                }
+                    break;
+                default:
+                    break;
+            }
+        }
+            
+            break;
+        case kActionSheet_Delete_Tag://删除评论
+        {
+            switch (buttonIndex) {
+                case 0://删除
+                {
+                    //点击位置
+                    NSInteger index = [self.dataSoure indexOfObject:self.deleteDic[@"all"]];
+                    //拿出原始数据
+                    SHFriendTimeLineFrame *messageFrame = self.deleteDic[@"all"];
+                    
+                    //重新设置内容
+                    SHFriendTimeLine *model = [[SHFriendTimeLine alloc]init];
+                    model = messageFrame.message;
+                    
+                    //构建消息内容
+                    NSMutableArray <SHFriendTimeLineComment *>*messageArr = [NSMutableArray arrayWithArray:messageFrame.message.commentArr];
+                    
+                    //删除评论
+                    [messageArr removeObject:self.deleteDic[@"delete"]];
+                    
+                    model.commentArr = messageArr;
+                    
+                    //添加内容
+                    messageFrame.message = model;
+                    [self.dataSoure replaceObjectAtIndex:index withObject:messageFrame];
+                    //进行刷新
+                    [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+                    self.deleteDic = nil;
+                }
+                    break;
+                default:
+                    break;
+            }
+        }
+            break;
+        default:
+            break;
+    }
 }
 
 #pragma mark - SHFriendHeadViewDelegate
 - (void)headClick:(SHFriendHeadView *)view ClickType:(SHFriendHeadClickType)clickType{
     switch (clickType) {
         case SHFriendHeadClickType_Avatar://头像
+        {
             NSLog(@"头部视图===头像点击");
+            [self messageUserClick:nil Message:UserName];
+        }
             break;
         case SHFriendHeadClickType_Background://背景
             NSLog(@"头部视图===背景点击");
-            
+        {
+            UIActionSheet *sheet;
+            if ([self.userInfo isEqualToString:UserName]) {//自己
+                
+                sheet = [[UIActionSheet alloc] initWithTitle:@"更换背景" delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:nil otherButtonTitles:@"相册",@"相机", nil];
+                sheet.tag = kActionSheet_BackGroup_Me_Tag;
+                
+            }else{//其他人
+                
+                sheet = [[UIActionSheet alloc] initWithTitle:@"提示" delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:@"保存到相册" otherButtonTitles:nil, nil];
+                sheet.tag = kActionSheet_BackGroup_Other_Tag;
+            }
+            [sheet showInView:self.view];
+        }
             break;
         default:
             break;
@@ -401,16 +568,26 @@
 #pragma mark - SHFriendTimeLineCellDelegate
 #pragma mark 消息体功能点击
 - (void)messageClick:(SHFriendTimeLineTableViewCell *)cell Message:(SHFriendTimeLineFrame *)message ClickType:(SHFriendTimeLineClickType)clickType{
+    
     //移除点赞
     [[SHLikeAndCommentView shareSHLikeAndCommentView] removeFromSuperview];
+    //关闭输入框
+    [self.commentInput hideSHCommtetInput];
     
     switch (clickType) {
-        case SHFriendTimeLineClickType_Open://展开
+        case SHFriendTimeLineClickType_open://展开
         {
             NSLog(@"点击了====展开");
         }
             break;
-        case SHFriendTimeLineClickType_LikeANDComment://点赞
+        case SHFriendTimeLineClickType_delete://删除
+        {
+            NSLog(@"点击了====删除");
+            [self.dataSoure removeObject:message];
+            [self.tableView reloadData];
+        }
+            break;
+        case SHFriendTimeLineClickType_like_comment://点赞
         {
             NSLog(@"点击了====点赞");
             
@@ -457,15 +634,27 @@
                     case 2:
                     {
                         NSLog(@"评论");
-                        //构建消息内容
-                        NSMutableArray <SHFriendTimeLineComment *>*messageArr = [NSMutableArray arrayWithArray:message.message.commentArr];
-                        //添加评论
-                        SHFriendTimeLineComment *comment = [[SHFriendTimeLineComment alloc]init];
-                        comment.comment = UserName;
-                        comment.content = @"我是自动评论！！！！http://www.jianshu.com/u/787eb6539a62";
-                        [messageArr addObject:comment];
-                        
-                        model.commentArr = messageArr;
+                        [self.commentInput showSHCommtetInput];
+
+                        self.commentInput.block = ^(NSString *text,id obj){
+                            
+                            [weakSelf.commentInput hideSHCommtetInput];
+                            //构建消息内容
+                            NSMutableArray <SHFriendTimeLineComment *>*messageArr = [NSMutableArray arrayWithArray:message.message.commentArr];
+                            //添加评论
+                            SHFriendTimeLineComment *comment = [[SHFriendTimeLineComment alloc]init];
+                            comment.comment = UserName;
+                            comment.content = text;
+                            [messageArr addObject:comment];
+                            
+                            model.commentArr = messageArr;
+                            
+                            //添加内容
+                            message.message = model;
+                            [weakSelf.dataSoure replaceObjectAtIndex:index withObject:message];
+                            //进行刷新
+                            [weakSelf.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+                        };
                     }
                         break;
                     default:
@@ -480,29 +669,36 @@
             }];
         }
             break;
-        case SHFriendTimeLineClickType_Comment://评论
+        case SHFriendTimeLineClickType_comment://评论
         {
             //点击位置
             NSInteger index = [self.dataSoure indexOfObject:message];
-            
             //重新设置内容
             SHFriendTimeLine *model = [[SHFriendTimeLine alloc]init];
             model = message.message;
             
+            [self.commentInput showSHCommtetInput];
             
-            //构建消息内容
-            NSMutableArray <SHFriendTimeLineComment *>*messageArr = [NSMutableArray arrayWithArray:message.message.commentArr];
-            //添加评论
-            SHFriendTimeLineComment *comment = [[SHFriendTimeLineComment alloc]init];
-            comment.comment = UserName;
-            comment.content = @"我是自动评论！！！！http://www.jianshu.com/u/787eb6539a62";
-            [messageArr addObject:comment];
-            
-            //添加内容
-            message.message = model;
-            [self.dataSoure replaceObjectAtIndex:index withObject:message];
-            //进行刷新
-            [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+            WeakSelf
+            self.commentInput.block = ^(NSString *text, id obj){
+                
+                [weakSelf.commentInput hideSHCommtetInput];
+                //构建消息内容
+                NSMutableArray <SHFriendTimeLineComment *>*messageArr = [NSMutableArray arrayWithArray:message.message.commentArr];
+                //添加评论
+                SHFriendTimeLineComment *comment = [[SHFriendTimeLineComment alloc]init];
+                comment.comment = UserName;
+                comment.content = text;
+                [messageArr addObject:comment];
+                
+                model.commentArr = messageArr;
+                
+                //添加内容
+                message.message = model;
+                [weakSelf.dataSoure replaceObjectAtIndex:index withObject:message];
+                //进行刷新
+                [weakSelf.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+            };
         }
             break;
         default:
@@ -513,15 +709,24 @@
 #pragma mark 用户点击
 - (void)messageUserClick:(SHFriendTimeLineTableViewCell *)cell Message:(NSString *)message{
     
-    UIAlertView *ale = [[UIAlertView alloc]initWithTitle:@"提示" message:[NSString stringWithFormat:@"点击了用户:%@",message] delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
-    [ale show];
+    //移除点赞
+    [[SHLikeAndCommentView shareSHLikeAndCommentView] removeFromSuperview];
+    //关闭输入框
+    [self.commentInput hideSHCommtetInput];
+    
+    SHFriendTimeLineViewController *view = [[SHFriendTimeLineViewController alloc]init];
+    view.type = SHFriendTimeLineViewType_One;
+    view.userInfo = message;
+    [self.navigationController pushViewController:view animated:YES];
 }
 
-#pragma maek 回复点击
+#pragma mark 回复点击
 - (void)messageCommentClick:(SHFriendTimeLineTableViewCell *)cell Message:(SHFriendTimeLineComment *)message{
     
     //移除点赞
     [[SHLikeAndCommentView shareSHLikeAndCommentView] removeFromSuperview];
+    //关闭输入框
+    [self.commentInput hideSHCommtetInput];
     
     //点击位置
     NSInteger index = [self.dataSoure indexOfObject:cell.messageFrame];
@@ -534,27 +739,37 @@
     
     //构建消息内容
     NSMutableArray <SHFriendTimeLineComment *>*messageArr = [NSMutableArray arrayWithArray:messageFrame.message.commentArr];
+    
     //判断是否为自己
     if ([message.comment isEqualToString:UserName]) {//是自己
         
-        //删除评论
-        [messageArr removeObject:message];
+        self.deleteDic = @{@"all":messageFrame,@"delete":message};
+        UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:@"删除评论?" delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:@"删除" otherButtonTitles:nil];
+        sheet.tag = kActionSheet_Delete_Tag;
+        [sheet showInView:self.view];
+        
     }else{
-        //添加评论
-        SHFriendTimeLineComment *comment = [[SHFriendTimeLineComment alloc]init];
-        comment.comment = UserName;
-        comment.replier = message.comment;
-        comment.content = @"我是自动评论！！！！http://www.jianshu.com/u/787eb6539a62";
-        [messageArr addObject:comment];
+        
+        self.commentInput.placeholder = [NSString stringWithFormat:@"回复 %@:",message.comment];
+        [self.commentInput showSHCommtetInput];
+        WeakSelf
+        self.commentInput.block = ^(NSString *text, id obj){
+            [weakSelf.commentInput hideSHCommtetInput];
+            SHFriendTimeLineComment *comment = [[SHFriendTimeLineComment alloc]init];
+            comment.comment = UserName;
+            comment.replier = message.comment;
+            comment.content = text;
+            [messageArr addObject:comment];
+            
+            model.commentArr = messageArr;
+            
+            //添加内容
+            messageFrame.message = model;
+            [weakSelf.dataSoure replaceObjectAtIndex:index withObject:messageFrame];
+            //进行刷新
+            [weakSelf.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+        };
     }
-
-    model.commentArr = messageArr;
-    
-    //添加内容
-    messageFrame.message = model;
-    [self.dataSoure replaceObjectAtIndex:index withObject:messageFrame];
-    //进行刷新
-    [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
 }
 
 #pragma mark 图片点击
@@ -563,6 +778,8 @@
     NSLog(@"点击了====图片%ld",(long)index);
     //移除点赞
     [[SHLikeAndCommentView shareSHLikeAndCommentView] removeFromSuperview];
+    //关闭输入框
+    [self.commentInput hideSHCommtetInput];
     
     NSMutableArray *imageArr = [[NSMutableArray alloc]init];
     

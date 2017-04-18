@@ -35,8 +35,10 @@
 //点赞角的高度
 #define kLikeAngleH 6.5
 
-//时间和点赞高度
-#define kTimeAndLikeH 25
+//时间、点赞、删除高度
+#define kTimeAndLikeAndDeleteH 25
+#define kDeleteW 40
+
 //点赞按钮宽
 #define kLikeW 25
 
@@ -47,9 +49,11 @@
 #define kRGB(R,G,B,A) [UIColor colorWithRed:R/255.0 green:G/255.0 blue:B/255.0 alpha:A]
 
 //字体
-//文字字体(文本内容、点赞、评论)如果需要不同的大小分开即可
+//文字字体(文本内容、点赞、评论、删除)如果需要不同的大小分开即可
 #define kContentFont [UIFont systemFontOfSize:15]
 
+//界面
+#import "SHFriendTimeLineViewController.h"
 //文件
 #import "SHFriendTimeLineFrame.h"
 #import "UIView+Extension.h"

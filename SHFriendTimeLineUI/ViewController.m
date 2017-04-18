@@ -7,7 +7,7 @@
 //
 
 #import "ViewController.h"
-#import "SHFriendTimeLineTableViewController.h"
+#import "SHFriendTimeLineHeader.h"
 
 @interface ViewController ()
 
@@ -27,7 +27,9 @@
 
 //进入朋友圈
 - (IBAction)btnClick:(id)sender {
-    SHFriendTimeLineTableViewController *view = [[SHFriendTimeLineTableViewController alloc]init];
+    SHFriendTimeLineViewController *view = [[SHFriendTimeLineViewController alloc]init];
+    view.type = SHFriendTimeLineViewType_All;
+    view.userInfo = @"那啥";
     [self.navigationController pushViewController:view animated:YES];
 }
 

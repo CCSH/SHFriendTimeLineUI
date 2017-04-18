@@ -106,6 +106,20 @@
     return _timeLabel;
 }
 
+#pragma mark 创建删除
+- (UIButton *)deleteBtn{
+    if (!_deleteBtn) {
+        _deleteBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_deleteBtn setTitle:@"删除" forState:0];
+        [_deleteBtn setTitleColor:kRGB(51, 84, 135, 1) forState:0];
+        _deleteBtn.titleLabel.font = kContentFont;
+        [_deleteBtn addTarget:self action:@selector(deleteClock) forControlEvents:UIControlEventTouchUpInside];
+        
+        [self.contentView addSubview:_deleteBtn];
+    }
+    return _deleteBtn;
+}
+
 #pragma mark 创建点赞
 - (UIButton *)likeBtn{
     
@@ -159,7 +173,7 @@
 - (void)openClick{
     
     if ([self.delegate respondsToSelector:@selector(messageClick:Message:ClickType:)]) {
-        [self.delegate messageClick:self Message:self.messageFrame ClickType:SHFriendTimeLineClickType_Open];
+        [self.delegate messageClick:self Message:self.messageFrame ClickType:SHFriendTimeLineClickType_open];
     }
 }
 
@@ -167,7 +181,14 @@
 - (void)likeClick{
     
     if ([self.delegate respondsToSelector:@selector(messageClick:Message:ClickType:)]) {
-        [self.delegate messageClick:self Message:self.messageFrame ClickType:SHFriendTimeLineClickType_LikeANDComment];
+        [self.delegate messageClick:self Message:self.messageFrame ClickType:SHFriendTimeLineClickType_like_comment];
+    }
+}
+
+- (void)deleteClock{
+    
+    if ([self.delegate respondsToSelector:@selector(messageClick:Message:ClickType:)]) {
+        [self.delegate messageClick:self Message:self.messageFrame ClickType:SHFriendTimeLineClickType_delete];
     }
 }
 
@@ -190,6 +211,7 @@
     self.messageImageView.hidden = YES;
     self.likeBGView.hidden = YES;
     self.commentBGView.hidden = YES;
+    self.deleteBtn.hidden = YES;
     
     //1、 设置头像
     self.avatarBtn.frame = messageFrame.iconF;
@@ -215,16 +237,20 @@
     self.timeLabel.frame= messageFrame.timeF;
     self.timeLabel.text = message.messageTime;
     
-    //6、 点赞按钮
+    //6、 删除
+    self.deleteBtn.frame = messageFrame.deleteF;
+    self.deleteBtn.hidden = ![messageFrame.message.friendNick isEqualToString:UserName];
+    
+    //7、 点赞按钮
     self.likeBtn.frame = messageFrame.likeF;
     
-    //7、 点赞列表
+    //8、 点赞列表
     if (message.likeListArr.count) {//是否有点赞
         
         [self addMessageLikeView];
     }
     
-    //8、 评论列表
+    //9、 评论列表
     if (message.commentArr.count) {//是否有评论
         
         [self addMessageCommentView];

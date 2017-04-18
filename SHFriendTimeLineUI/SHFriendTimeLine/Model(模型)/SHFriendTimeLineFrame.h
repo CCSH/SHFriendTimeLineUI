@@ -25,6 +25,8 @@
 @property (nonatomic, copy, readonly) NSArray *imageFArr;
 //时间CGRect
 @property (nonatomic, assign, readonly) CGRect timeF;
+//删除CGRect
+@property (nonatomic, assign, readonly) CGRect deleteF;
 //点赞按钮CGRect
 @property (nonatomic, assign, readonly) CGRect likeF;
 //点赞列表CGRect
