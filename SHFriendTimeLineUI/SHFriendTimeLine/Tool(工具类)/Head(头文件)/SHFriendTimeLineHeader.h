@@ -19,6 +19,9 @@
 #define kSHHeight ([UIScreen mainScreen].bounds.size.height)
 #define kSHWidth ([UIScreen mainScreen].bounds.size.width)
 
+//状态栏高度
+#define kStatusBarH ([[UIApplication sharedApplication] statusBarFrame].size.height)
+
 //控件间隔(整体内容与屏幕边缘)
 #define kContentMargin 10
 //头像宽高

@@ -15,7 +15,7 @@
 #import "SHPhotoBrowserViewController.h"
 #import "XJJRefresh.h"
 #import "MJRefresh.h"
-#import "SHCommtetInput.h"
+#import "SHCommentInputView.h"
 
 //背景自己
 #define kActionSheet_BackGroup_Me_Tag 1
@@ -39,7 +39,7 @@ UITableViewDataSource>
 //FPS
 @property (nonatomic, strong) YYFPSLabel *fpsLabel;
 //评论输入框
-@property (nonatomic, strong) SHCommtetInput *commentInput;
+@property (nonatomic, strong) SHCommentInputView *inputView;
 
 //删除评论暂存
 @property (nonatomic, strong) NSDictionary *deleteDic;
@@ -51,8 +51,9 @@ UITableViewDataSource>
 #pragma mark - 懒加载
 - (UITableView *)tableView {
     if (!_tableView) {
-        _tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, 0, SHWidth, SHHeight) style:UITableViewStylePlain];
+        _tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, -(44 + kStatusBarH), kSHWidth, kSHHeight + (44 + kStatusBarH)) style:UITableViewStylePlain];
         _tableView.backgroundColor = [UIColor whiteColor];
+        _tableView.showsVerticalScrollIndicator = NO;
         _tableView.delegate = self;
         _tableView.dataSource = self;
         [self.view addSubview:_tableView];
@@ -60,18 +61,17 @@ UITableViewDataSource>
     return _tableView;
 }
 
-- (SHCommtetInput *)commentInput{
+- (SHCommentInputView *)inputView{
     
-    if (!_commentInput) {
-        _commentInput = [SHCommtetInput sharedSHCommtetInput];
-        _commentInput.frame = CGRectMake(0, self.view.frame.size.height - 50, SHWidth, 50);
-        _commentInput.hidden = YES;
-        [_commentInput reloadView];
-        [self.view addSubview:_commentInput];
-        [self.view bringSubviewToFront:_commentInput];
+    if (!_inputView) {
+        _inputView = [SHCommentInputView sharedSHCommentInputView];
+        _inputView.frame = CGRectMake(0, kSHHeight, kSHWidth, 50);
+        [_inputView reloadView];
+        [self.view addSubview:_inputView];
+        [self.view bringSubviewToFront:_inputView];
     }
     
-    return _commentInput;
+    return _inputView;
 }
 
 - (void)viewDidLoad {
@@ -154,25 +154,41 @@ UITableViewDataSource>
 #pragma mark - 配置刷新、加载
 - (void)setRefresh{
     
-    UIImageView *refreshView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, 25, 25)];
-    refreshView.image = [UIImage imageNamed:@"refresh_icon.png"];
-    
-    XJJHolyCrazyHeader *crazyRefresh = [XJJHolyCrazyHeader holyCrazyCustomHeaderWithCustomContentView:refreshView];
-    crazyRefresh.refreshingPosition = CGPointMake(20, 80);
-    crazyRefresh.startPosition = CGPointMake(20, 39);
-    
-    __weak typeof(self) weakSelf = self;
-    [self.tableView add_xjj_refreshHeader:crazyRefresh refreshBlock:^{
-        
-        [weakSelf.tableView setRefreshState:XJJRefreshStateIdle];
-        
-        [weakSelf.tableView replace_xjj_refreshBlock:^{
-            
-            [weakSelf loadNewData];
-        }];
-    }];
-    
     self.tableView.mj_footer = [MJRefreshAutoNormalFooter footerWithRefreshingTarget:self refreshingAction:@selector(loadOldData)];
+    
+    switch (self.type) {
+        case SHFriendTimeLineViewType_All://所有
+        {
+            UIImageView *refreshView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, 30, 30)];
+            refreshView.image = [UIImage imageNamed:@"refresh_icon@2x.png"];
+            
+            XJJHolyCrazyHeader *crazyRefresh = [XJJHolyCrazyHeader holyCrazyCustomHeaderWithCustomContentView:refreshView];
+            crazyRefresh.startPosition = CGPointMake(20, (44 + kStatusBarH) - 32);
+            crazyRefresh.refreshingPosition = CGPointMake(20,150);
+            
+            __weak typeof(self) weakSelf = self;
+            [self.tableView add_xjj_refreshHeader:crazyRefresh refreshBlock:^{
+                
+                [weakSelf.tableView setRefreshState:XJJRefreshStateIdle];
+                
+                [weakSelf.tableView replace_xjj_refreshBlock:^{
+                    
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                         [weakSelf loadNewData];
+                    });
+                   
+                }];
+            }];
+        }
+            break;
+        case SHFriendTimeLineViewType_One://个人
+        {
+            [self.tableView.mj_footer beginRefreshing];
+        }
+            break;
+        default:
+            break;
+    }
 }
 
 #pragma mark - 刷新数据
@@ -455,7 +471,7 @@ UITableViewDataSource>
     //移除点赞
     [[SHLikeAndCommentView shareSHLikeAndCommentView] removeFromSuperview];
     //关闭输入框
-    [self.commentInput hideSHCommtetInput];
+    [self.inputView hideCommentInput];
 }
 
 #pragma mark - UIActionSheetDelegate
@@ -572,7 +588,7 @@ UITableViewDataSource>
     //移除点赞
     [[SHLikeAndCommentView shareSHLikeAndCommentView] removeFromSuperview];
     //关闭输入框
-    [self.commentInput hideSHCommtetInput];
+    [self.inputView hideCommentInput];
     
     switch (clickType) {
         case SHFriendTimeLineClickType_open://展开
@@ -634,11 +650,11 @@ UITableViewDataSource>
                     case 2:
                     {
                         NSLog(@"评论");
-                        [self.commentInput showSHCommtetInput];
+                        [self.inputView showCommentInput];
 
-                        self.commentInput.block = ^(NSString *text,id obj){
+                        self.inputView.block = ^(NSString *text,id obj){
                             
-                            [weakSelf.commentInput hideSHCommtetInput];
+                            [weakSelf.inputView hideCommentInput];
                             //构建消息内容
                             NSMutableArray <SHFriendTimeLineComment *>*messageArr = [NSMutableArray arrayWithArray:message.message.commentArr];
                             //添加评论
@@ -677,12 +693,12 @@ UITableViewDataSource>
             SHFriendTimeLine *model = [[SHFriendTimeLine alloc]init];
             model = message.message;
             
-            [self.commentInput showSHCommtetInput];
+            [self.inputView showCommentInput];
             
             WeakSelf
-            self.commentInput.block = ^(NSString *text, id obj){
+            self.inputView.block = ^(NSString *text, id obj){
                 
-                [weakSelf.commentInput hideSHCommtetInput];
+                [weakSelf.inputView hideCommentInput];
                 //构建消息内容
                 NSMutableArray <SHFriendTimeLineComment *>*messageArr = [NSMutableArray arrayWithArray:message.message.commentArr];
                 //添加评论
@@ -712,7 +728,7 @@ UITableViewDataSource>
     //移除点赞
     [[SHLikeAndCommentView shareSHLikeAndCommentView] removeFromSuperview];
     //关闭输入框
-    [self.commentInput hideSHCommtetInput];
+    [self.inputView hideCommentInput];
     
     SHFriendTimeLineViewController *view = [[SHFriendTimeLineViewController alloc]init];
     view.type = SHFriendTimeLineViewType_One;
@@ -726,7 +742,7 @@ UITableViewDataSource>
     //移除点赞
     [[SHLikeAndCommentView shareSHLikeAndCommentView] removeFromSuperview];
     //关闭输入框
-    [self.commentInput hideSHCommtetInput];
+    [self.inputView hideCommentInput];
     
     //点击位置
     NSInteger index = [self.dataSoure indexOfObject:cell.messageFrame];
@@ -750,11 +766,11 @@ UITableViewDataSource>
         
     }else{
         
-        self.commentInput.placeholder = [NSString stringWithFormat:@"回复 %@:",message.comment];
-        [self.commentInput showSHCommtetInput];
+        self.inputView.placeholder = [NSString stringWithFormat:@"回复 %@:",message.comment];
+        [self.inputView showCommentInput];
         WeakSelf
-        self.commentInput.block = ^(NSString *text, id obj){
-            [weakSelf.commentInput hideSHCommtetInput];
+        self.inputView.block = ^(NSString *text, id obj){
+            [weakSelf.inputView hideCommentInput];
             SHFriendTimeLineComment *comment = [[SHFriendTimeLineComment alloc]init];
             comment.comment = UserName;
             comment.replier = message.comment;
@@ -779,7 +795,7 @@ UITableViewDataSource>
     //移除点赞
     [[SHLikeAndCommentView shareSHLikeAndCommentView] removeFromSuperview];
     //关闭输入框
-    [self.commentInput hideSHCommtetInput];
+    [self.inputView hideCommentInput];
     
     NSMutableArray *imageArr = [[NSMutableArray alloc]init];
     

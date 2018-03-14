@@ -21,8 +21,6 @@
 //矩形框数组
 @property (nonatomic, strong) NSArray *rects;
 
-- (instancetype)initSHClickTextWithIndex:(NSInteger)index Rang:(NSRange)range Parameter:(id)parameter Rects:(NSArray *)rects;
-
 @end
 
 @class SHClickTextView;

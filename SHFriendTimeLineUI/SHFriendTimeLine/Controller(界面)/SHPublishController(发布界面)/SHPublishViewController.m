@@ -7,7 +7,7 @@
 //
 
 #import "SHPublishViewController.h"
-#import "CSHTextView.h"
+#import "SHTextView.h"
 
 #define HEIGHT ([UIScreen mainScreen].bounds.size.height)
 #define WIDTH ([UIScreen mainScreen].bounds.size.width)
@@ -15,15 +15,20 @@
 @interface SHPublishViewController ()<UITextViewDelegate,ZLPhotoPickerBrowserViewControllerDelegate>
 
 //输入框
-@property (nonatomic, strong) CSHTextView *textView;
+@property (nonatomic, strong) SHTextView *textView;
 //字数提示
-@property (nonatomic, strong) UILabel * promptLabel;
+@property (nonatomic, strong) UILabel *promptLabel;
 //图片位置
 @property (nonatomic, strong) UIScrollView *scrollView;
+//下方权限按钮
+@property (nonatomic, strong) UIButton *selectBtn;
 //图片数组
 @property (nonatomic, strong) NSMutableArray *assets;
 //图片数量
 @property (nonatomic, assign) int phoneIndex;
+
+//当前点击
+@property (nonatomic, copy) NSString *index;
 
 @end
 
@@ -94,11 +99,11 @@
 
 #pragma mark - 懒加载
 #pragma mark - 输入框
-- (CSHTextView *)textView{
+- (SHTextView *)textView{
     if (!_textView) {
         // 添加输入控件
         // 1.创建输入控件
-        _textView = [[CSHTextView alloc] init];
+        _textView = [[SHTextView alloc] init];
         _textView.frame = CGRectMake(15,100,WIDTH - 30,140);
         _textView.alwaysBounceVertical = YES; // 垂直方向上拥有有弹簧效果
         

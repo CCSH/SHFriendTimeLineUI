@@ -8,6 +8,10 @@
 
 #import "SHClickTextView.h"
 
+@implementation SHClickTextModel
+
+@end
+
 @implementation SHClickTextView
 
 #pragma mark - 实例化
@@ -28,6 +32,7 @@
 
 #pragma mark - 初始化
 - (void)setup{
+    
     self.userInteractionEnabled = YES;
     self.scrollEnabled = NO;
     self.textContainerInset = UIEdgeInsetsMake(0, 0, 0, 0);
@@ -100,7 +105,12 @@
     }
     
     //初始化模型
-    SHClickTextModel *linkModel = [[SHClickTextModel alloc] initSHClickTextWithIndex:index Rang:[rang rangeValue] Parameter:parameter Rects:rects];
+    SHClickTextModel *linkModel = [[SHClickTextModel alloc] init];
+    linkModel.index = index;
+    linkModel.range = [rang rangeValue];
+    linkModel.parameter = parameter;
+    linkModel.rects = rects;
+    
     if (linkModel) {
         //添加点击
         [self.linkArray addObject:linkModel];
@@ -115,23 +125,7 @@
     }
 }
 
-@end
 
-@interface SHClickTextModel()
 
 @end
 
-@implementation SHClickTextModel
-
-#pragma mark - 初始化模型(如果有其他需要进行传输的在这里赋值)
-- (instancetype)initSHClickTextWithIndex:(NSInteger)index Rang:(NSRange)range Parameter:(id)parameter Rects:(NSArray *)rects {
-    if ((self = [super init])) {
-        _index = index;
-        _range = range;
-        _parameter = parameter;
-        _rects = rects;
-    }
-    return self;
-}
-
-@end
