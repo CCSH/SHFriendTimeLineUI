@@ -22,28 +22,31 @@
 //状态栏高度
 #define kStatusBarH ([[UIApplication sharedApplication] statusBarFrame].size.height)
 
-//控件间隔(整体内容与屏幕边缘)
-#define kContentMargin 10
+//控件间隔
+#define kMargin 10
+//内容左右间隔(点赞、评论)
+#define kContentLRMargin 10
+//内容左右间隔(点赞、评论)
+#define kContentUDMargin 5
 //头像宽高
 #define kAvatarWH 55
 //昵称的高度
 #define kNickH 20
 //图片间隔
 #define kImageMargin 5
-//左右间隔
-#define kLRMargin 10
-//上下间隔
-#define kUDMargin 5
 
-//点赞角的高度
+//点赞背景角的高度
 #define kLikeAngleH 6.5
 
-//时间、点赞、删除高度
+//时间、点赞、删除、展开高度
 #define kTimeAndLikeAndDeleteH 25
 #define kDeleteW 40
 
 //点赞按钮宽
 #define kLikeW 25
+
+//文本内容最大行数
+#define kXontentMaxLine 4
 
 #define WeakSelf __weak typeof(self) weakSelf = self;
 
@@ -53,13 +56,16 @@
 
 //字体
 //文字字体(文本内容、点赞、评论、删除)如果需要不同的大小分开即可
-#define kContentFont [UIFont systemFontOfSize:15]
+#define kContentFont [UIFont systemFontOfSize:16]
+#define kTimeFont [UIFont systemFontOfSize:14]
 
 //界面
 #import "SHFriendTimeLineViewController.h"
 //文件
 #import "SHFriendTimeLineFrame.h"
-#import "UIView+Extension.h"
+#import "UIView+SHExtension.h"
 #import "SHFriendTimeLineType.h"
-#import "SHLikeAndCommentView.h"
+#import "SHTimeLineMenu.h"
 #import "ZLPhoto.h"
+#import "SHClickTextView.h"
+#import "SHCommentView.h"

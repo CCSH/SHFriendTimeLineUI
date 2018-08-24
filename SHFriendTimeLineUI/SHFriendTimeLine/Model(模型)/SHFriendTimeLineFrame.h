@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import "SHFriendTimeLine.h"
+#import "SHCommentView.h"
 
 /**
  朋友圈界面模型
@@ -21,21 +22,25 @@
 @property (nonatomic, assign, readonly) CGRect nameF;
 //文本内容CGRect
 @property (nonatomic, assign, readonly) CGRect textF;
-//图片内容CGRectArr
-@property (nonatomic, copy, readonly) NSArray *imageFArr;
+//折叠CGRect
+@property (nonatomic, assign, readonly) CGRect flodF;
 //时间CGRect
 @property (nonatomic, assign, readonly) CGRect timeF;
 //删除CGRect
 @property (nonatomic, assign, readonly) CGRect deleteF;
-//点赞按钮CGRect
-@property (nonatomic, assign, readonly) CGRect likeF;
+//菜单按钮CGRect
+@property (nonatomic, assign, readonly) CGRect menuF;
 //点赞列表CGRect
-@property (nonatomic, assign, readonly) CGRect likeListF;
+@property (nonatomic, assign, readonly) CGRect likeF;
 //评论列表CGRect
 @property (nonatomic, assign, readonly) CGRect commentF;
-//评论内容CGRect
-@property (nonatomic, copy, readonly) NSArray *commentFArr;
 
+//点赞内容
+@property (nonatomic, copy) NSAttributedString *likeAtt;
+//图片内容CGRectArr
+@property (nonatomic, copy, readonly) NSArray *imageFArr;
+//评论视图
+@property (nonatomic, strong) SHCommentView *commentView;
 //内容
 @property (nonatomic, strong) SHFriendTimeLine *message;
 

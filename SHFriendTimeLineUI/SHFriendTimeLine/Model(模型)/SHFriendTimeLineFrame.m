@@ -9,6 +9,7 @@
 #import "SHFriendTimeLineFrame.h"
 #import "SHFriendTimeLineHeader.h"
 #import "SHCGRectHelper.h"
+#import "SHCommentView.h"
 
 @implementation SHFriendTimeLineFrame
 
@@ -18,35 +19,53 @@
     _message = message;
     
     //内容X
-    CGFloat Content_X = 2*kContentMargin + kAvatarWH;
+    CGFloat content_x = 2*kMargin + kAvatarWH;
     //内容Y
-    CGFloat Content_Y = kContentMargin;
+    CGFloat content_y = kMargin;
     
     //内容最大宽度
-    CGFloat Content_MaxW = kSHWidth - (3*kContentMargin + kAvatarWH);
+    CGFloat content_maxW = kSHWidth - (3*kMargin + kAvatarWH);
     
     //1、 设置头像
-    _iconF = CGRectMake(kContentMargin, Content_Y, kAvatarWH, kAvatarWH);
+    _iconF = CGRectMake(kMargin, content_y, kAvatarWH, kAvatarWH);
     
     //2、 设置昵称
-    _nameF = CGRectMake(Content_X, Content_Y, Content_MaxW, kNickH);
-    Content_Y += kNickH + kUDMargin;
+    _nameF = CGRectMake(content_x, content_y, content_maxW, kNickH);
+    content_y += kNickH + kMargin;
     
     NSDictionary *contentDic = @{NSFontAttributeName:kContentFont};
     //3、 设置文本内容
     if (message.messageContent.length) {//是否存在文本内容
         
-        CGSize contentSize = [message.messageContent boundingRectWithSize:CGSizeMake(Content_MaxW, CGFLOAT_MAX) options:NSStringDrawingUsesLineFragmentOrigin attributes:contentDic context:nil].size;
-        
-        _textF = CGRectMake(Content_X, Content_Y, Content_MaxW, contentSize.height);
-        
-        Content_Y += contentSize.height + kUDMargin;
+        CGSize contentSize = [message.messageContent boundingRectWithSize:CGSizeMake(content_maxW, CGFLOAT_MAX) options:NSStringDrawingUsesLineFragmentOrigin attributes:contentDic context:nil].size;
+
+        //规定高度
+        CGFloat role_h = kContentFont.lineHeight*kXontentMaxLine;
+        //如果实际内容大于规定高度则展示
+        if (contentSize.height > role_h) {
+            
+            if (message.isFold) {//展开
+                _textF = CGRectMake(content_x, content_y, content_maxW, contentSize.height);
+                
+            }else{
+                _textF = CGRectMake(content_x, content_y, content_maxW, role_h);
+            }
+            
+            content_y += CGRectGetHeight(_textF) + kMargin;
+            
+            _flodF = CGRectMake(content_x, content_y, kDeleteW, kTimeAndLikeAndDeleteH);
+            content_y += CGRectGetHeight(_flodF) + kMargin;
+            
+        }else{
+            _textF = CGRectMake(content_x, content_y, content_maxW, contentSize.height);
+            content_y += contentSize.height + kMargin;
+        }
     }
     
     //4、 设置图片内容
     if (message.messageImageArr.count) {//是否存在图片内容
         //计算图片大小(一排3个最多3排)
-        CGFloat imageWH = (Content_MaxW - kAvatarWH - 2*kImageMargin)/3;
+        CGFloat imageWH = (content_maxW - kAvatarWH - 2*kImageMargin)/3;
         
         SHCGRectHelper *rect = [[SHCGRectHelper alloc]init];
         rect.viewW = imageWH;
@@ -69,79 +88,69 @@
         }
 
         //计算图片背景frame
-        CGRect frame = CGRectMake(Content_X, Content_Y, Content_MaxW , line*(kImageMargin + imageWH));
+        CGRect frame = CGRectMake(content_x, content_y, content_maxW , line*(kImageMargin + imageWH));
         
         [imageFArr addObject:[NSValue valueWithCGRect:frame]];
         
         _imageFArr = imageFArr;
         //需要减去多出来的图片间隔
-        Content_Y = CGRectGetMaxY(frame) - kImageMargin + kUDMargin;
+        content_y = CGRectGetMaxY(frame) - kImageMargin + kMargin;
     }
     
-    //5、 时间
-    _timeF = CGRectMake(Content_X, Content_Y, Content_MaxW, kTimeAndLikeAndDeleteH);
+    //5、 设置时间
+    _timeF = CGRectMake(content_x, content_y, content_maxW, kTimeAndLikeAndDeleteH);
     
-    //6、 删除
-    _deleteF = CGRectMake(Content_X + 100, Content_Y, kDeleteW, kTimeAndLikeAndDeleteH);
+    //6、 设置删除
+    _deleteF = CGRectMake(content_x + 100, content_y, kDeleteW, kTimeAndLikeAndDeleteH);
     
-    //7、 点赞按钮
-    _likeF = CGRectMake(kSHWidth - kLikeW - kContentMargin, Content_Y, kLikeW, kTimeAndLikeAndDeleteH);
-    Content_Y += kTimeAndLikeAndDeleteH + kUDMargin;
+    //7、 设置菜单
+    _menuF = CGRectMake(kSHWidth - kLikeW - kContentLRMargin, content_y, kLikeW, kTimeAndLikeAndDeleteH);
+    content_y += kTimeAndLikeAndDeleteH + kMargin;
     
-    //8、 点赞列表
+    //8、 设置点赞列表
     if (message.likeListArr.count) {//是否有点赞人
         
-        NSString *likeList = [message.likeListArr componentsJoinedByString:@"、"];
-        //此空格模仿点赞按钮占位
-        CGSize likeListSize = [[NSString stringWithFormat:@"图 %@",likeList] boundingRectWithSize:CGSizeMake(Content_MaxW - 2*kLRMargin, CGFLOAT_MAX) options:NSStringDrawingUsesLineFragmentOrigin attributes:contentDic context:nil].size;
+        NSMutableAttributedString *likeAtt = [[NSMutableAttributedString alloc]initWithString:[NSString stringWithFormat:@" %@",[message.likeListArr componentsJoinedByString:@"、"]]];
+        
+        //添加点赞图片
+        NSTextAttachment *likeAttachment = [[NSTextAttachment alloc]init];
+        likeAttachment.image = [UIImage imageNamed:@"timeline_like"];
+        //位置微调
+        likeAttachment.bounds = CGRectMake(0, -2, 15, 15);
+        
+        NSAttributedString *image = [NSAttributedString attributedStringWithAttachment:likeAttachment];
+        [likeAtt insertAttributedString:image atIndex:0];
+        [likeAtt addAttribute:NSFontAttributeName value:kContentFont range:NSMakeRange(0, likeAtt.length)];
+        
+        _likeAtt = likeAtt;
+        //计算
+        CGSize likeListSize = [likeAtt boundingRectWithSize:CGSizeMake(content_maxW - 2*kContentLRMargin, CGFLOAT_MAX) options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading context:nil].size;
         //需要加上点赞按钮的角、微调
-        _likeListF = CGRectMake(Content_X, Content_Y, Content_MaxW, likeListSize.height + 2*kUDMargin + kLikeAngleH + 1);
-        Content_Y += _likeListF.size.height + 1;
+        _likeF = CGRectMake(content_x, content_y, content_maxW, likeListSize.height + 2*kContentUDMargin + kLikeAngleH);
+        //点赞与评论中间有条线
+        content_y += _likeF.size.height + 1;
     }
     
-    //9、 评论列表
+    //9、 设置评论列表
     if (message.commentArr.count) {//是否有评论人
         
-        __block CGSize commentSize = CGSizeMake(Content_MaxW - 2*kLRMargin, 0);
-        
-        __block NSMutableArray *comentArr = [[NSMutableArray alloc]init];
-        
-        [message.commentArr enumerateObjectsUsingBlock:^(SHFriendTimeLineComment * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            NSString *comment;
-            if (obj.replier) {
-                
-                comment = [NSString stringWithFormat:@"%@回复%@:%@",obj.comment,obj.replier,obj.content];
-            }else{
-                
-                comment = [NSString stringWithFormat:@"%@:%@",obj.comment,obj.content];
-            }
-            
-            CGFloat height = [comment boundingRectWithSize:CGSizeMake(Content_MaxW - 2*kLRMargin, CGFLOAT_MAX) options:NSStringDrawingUsesLineFragmentOrigin attributes:contentDic context:nil].size.height;
-            commentSize.height += height;
-            
-            CGFloat view_Y = 0;
-            
-            if (idx) {
-                view_Y = commentSize.height - height;
-            }
-            
-            CGRect frame = CGRectMake(kLRMargin, view_Y + kUDMargin, Content_MaxW - 2*kLRMargin, height);
-            
-            [comentArr addObject:[NSValue valueWithCGRect:frame]];
-            
-        }];
-    
-        //每一条的集合
-        _commentFArr = comentArr;
+        SHCommentView *comment = [[SHCommentView alloc]init];
+        comment.frame = CGRectMake(0, 0, content_maxW, 0);
+        comment.isCalculate = YES;
+        comment.commentArr = message.commentArr;
+        comment.space = kContentUDMargin/2;
+        comment.margin = kContentLRMargin;
+        [comment reloadView];
         //整体
-        _commentF = CGRectMake(Content_X, Content_Y, Content_MaxW, commentSize.height + 2*kUDMargin);
+        _commentF = CGRectMake(content_x, content_y, content_maxW, comment.height);
         
-        Content_Y += _commentF.size.height + kUDMargin;
+        content_y += _commentF.size.height + kMargin;
+    }else{
+        content_y -= 1;
     }
     
-    //10、 Cell高度
-    _cellHeight = Content_Y + kContentMargin;
+    //10、 设置Cell高度
+    _cellHeight = content_y + kMargin;
 }
-
 
 @end

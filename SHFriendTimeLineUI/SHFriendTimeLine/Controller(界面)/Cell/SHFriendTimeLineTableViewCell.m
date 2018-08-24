@@ -72,15 +72,15 @@
 }
 
 #pragma mark 创建展开按钮
-- (UIButton *)openBtn{
-    
-    if (!_openBtn) {
-        _openBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_openBtn addTarget:self action:@selector(openClick) forControlEvents:UIControlEventTouchUpInside];
-        
-        [self.contentView addSubview:_openBtn];
+- (UIButton *)foldBtn{
+    if (!_foldBtn) {
+        _foldBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_foldBtn addTarget:self action:@selector(foldClick) forControlEvents:UIControlEventTouchUpInside];
+        [_foldBtn setTitleColor:kRGB(51, 84, 135, 1) forState:0];
+        _foldBtn.titleLabel.font = kContentFont;
+        [self.contentView addSubview:_foldBtn];
     }
-    return _openBtn;
+    return _foldBtn;
 }
 
 #pragma mark 创建图片内容
@@ -98,7 +98,7 @@
     
     if (!_timeLabel) {
         _timeLabel = [[UILabel alloc]init];
-        _timeLabel.font = kContentFont;
+        _timeLabel.font = kTimeFont;
         _timeLabel.textColor = kRGB(100, 100, 100, 1);
         
         [self.contentView addSubview:_timeLabel];
@@ -113,90 +113,124 @@
         [_deleteBtn setTitle:@"删除" forState:0];
         [_deleteBtn setTitleColor:kRGB(51, 84, 135, 1) forState:0];
         _deleteBtn.titleLabel.font = kContentFont;
-        [_deleteBtn addTarget:self action:@selector(deleteClock) forControlEvents:UIControlEventTouchUpInside];
+        [_deleteBtn addTarget:self action:@selector(deleteClick) forControlEvents:UIControlEventTouchUpInside];
         
         [self.contentView addSubview:_deleteBtn];
     }
     return _deleteBtn;
 }
 
-#pragma mark 创建点赞
-- (UIButton *)likeBtn{
+#pragma mark 创建菜单
+- (UIButton *)menuBtn{
     
-    if (!_likeBtn) {
-        _likeBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_likeBtn setBackgroundImage:[UIImage imageNamed:@"AlbumOperateMore"] forState:0];
-        [_likeBtn addTarget:self action:@selector(likeClick) forControlEvents:UIControlEventTouchUpInside];
+    if (!_menuBtn) {
+        _menuBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_menuBtn setBackgroundImage:[UIImage imageNamed:@"timeline_content_menu"] forState:0];
+        [_menuBtn addTarget:self action:@selector(menuClick) forControlEvents:UIControlEventTouchUpInside];
         
-        [self.contentView addSubview:_likeBtn];
+        [self.contentView addSubview:_menuBtn];
     }
-    return _likeBtn;
+    return _menuBtn;
 }
 
 #pragma mark 创建点赞背景
-- (UIImageView *)likeBGView{
+- (UIImageView *)likeView{
     
-    if (!_likeBGView) {
-        _likeBGView = [[UIImageView alloc]init];
-        UIImage *normal = [[UIImage imageNamed:@"like_bg.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(20, 45, 5, 5)];
-        _likeBGView.image = normal;
-        _likeBGView.userInteractionEnabled = YES;
+    if (!_likeView) {
+        _likeView = [[UIImageView alloc]init];
+        UIImage *normal = [[UIImage imageNamed:@"timeline_like_bg"] resizableImageWithCapInsets:UIEdgeInsetsMake(7, 30, 1, 1)];
+        _likeView.image = normal;
+        _likeView.userInteractionEnabled = YES;
         
-        [self.contentView addSubview:_likeBGView];
+        //点赞内容
+        SHClickTextView *textView = [[SHClickTextView alloc]init];
+        textView.backgroundColor = [UIColor clearColor];
+        textView.textContainerInset = UIEdgeInsetsMake(kLikeAngleH + kContentUDMargin, kContentLRMargin, 0, kContentLRMargin);
+        textView.linkAtts = @{NSForegroundColorAttributeName:kRGB(51, 84, 135, 1)};
+        //回调
+        textView.block = ^(NSString *parameter, SHClickTextView *textView) {
+            
+            //点击了用户
+            if ([self.delegate respondsToSelector:@selector(messageUserClick:message:)]) {
+                [self.delegate messageUserClick:self message:parameter];
+            }
+        };
+        
+        [_likeView addSubview:textView];
+        
+        [self.contentView addSubview:_likeView];
     }
-    return _likeBGView;
+    return _likeView;
 }
 
 #pragma mark 创建评论背景
-- (UIImageView *)commentBGView{
+- (SHCommentView *)commentView{
     
-    if (!_commentBGView) {
-        _commentBGView = [[UIImageView alloc]init];
-        _commentBGView.backgroundColor = kRGB(240, 240, 240, 1);
-        _commentBGView.userInteractionEnabled = YES;
+    if (!_commentView) {
+        _commentView = [[SHCommentView alloc]init];
+        _commentView.backgroundColor = kRGB(240, 240, 240, 1);
+        _commentView.userInteractionEnabled = YES;
+        _commentView.space = kContentUDMargin/2;
+        _commentView.margin = kContentLRMargin;
         
-        [self.contentView addSubview:_commentBGView];
+        [self.contentView addSubview:_commentView];
     }
-    return _commentBGView;
+    return _commentView;
 }
 
 #pragma mark - 点击
 #pragma mark 头像点击
 - (void)avatarClick{
     
-    if ([self.delegate respondsToSelector:@selector(messageUserClick:Message:)]) {
-        [self.delegate messageUserClick:self Message:self.messageFrame.message.friendNick];
+    if ([self.delegate respondsToSelector:@selector(messageUserClick:message:)]) {
+        [self.delegate messageUserClick:self message:self.messageFrame.message.friendNick];
     }
 }
 
-#pragma mark 展开点击
-- (void)openClick{
+#pragma mark 折叠点击
+- (void)foldClick{
     
-    if ([self.delegate respondsToSelector:@selector(messageClick:Message:ClickType:)]) {
-        [self.delegate messageClick:self Message:self.messageFrame ClickType:SHFriendTimeLineClickType_open];
+    if ([self.delegate respondsToSelector:@selector(messageClick:type:)]) {
+        [self.delegate messageClick:self type:SHFriendTimeLineClickType_fold];
     }
 }
 
-#pragma mark 点赞点击
-- (void)likeClick{
+#pragma mark 菜单点击
+- (void)menuClick{
     
-    if ([self.delegate respondsToSelector:@selector(messageClick:Message:ClickType:)]) {
-        [self.delegate messageClick:self Message:self.messageFrame ClickType:SHFriendTimeLineClickType_like_comment];
+    if ([self.delegate respondsToSelector:@selector(messageClick:type:)]) {
+        [self.delegate messageClick:self type:SHFriendTimeLineClickType_menu];
     }
 }
 
-- (void)deleteClock{
+#pragma mark 删除点击
+- (void)deleteClick{
     
-    if ([self.delegate respondsToSelector:@selector(messageClick:Message:ClickType:)]) {
-        [self.delegate messageClick:self Message:self.messageFrame ClickType:SHFriendTimeLineClickType_delete];
+    if ([self.delegate respondsToSelector:@selector(messageClick:type:)]) {
+        [self.delegate messageClick:self type:SHFriendTimeLineClickType_delete];
     }
 }
 
 #pragma mark 图片点击
 - (void)imageClick:(UITapGestureRecognizer *)tap{
     
-    if ([self.delegate respondsToSelector:@selector(imageClick:Message:Index:)]) {
-        [self.delegate imageClick:self Message:self.messageFrame Index:tap.view.tag - 1];
+    if ([self.delegate respondsToSelector:@selector(imageClick:message:index:)]) {
+        [self.delegate imageClick:self message:self.messageFrame index:tap.view.tag - 1];
+    }
+}
+
+#pragma mark 评论点击
+- (void)commentClick:(UITapGestureRecognizer *)gest{
+    
+    UIView *view = gest.view;
+    
+    view.backgroundColor = [UIColor lightGrayColor];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.25 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        view.backgroundColor = [UIColor clearColor];
+    });
+    
+    if ([self.delegate respondsToSelector:@selector(messageCommentClick:message:)]) {
+        [self.delegate messageCommentClick:self message:self.messageFrame.message.commentArr[gest.view.tag - 1]];
     }
 }
 
@@ -208,9 +242,10 @@
     
     //初始化
     self.contentTextView.hidden = YES;
+    self.foldBtn.hidden = YES;
     self.messageImageView.hidden = YES;
-    self.likeBGView.hidden = YES;
-    self.commentBGView.hidden = YES;
+    self.likeView.hidden = YES;
+    self.commentView.hidden = YES;
     self.deleteBtn.hidden = YES;
     
     //1、 设置头像
@@ -241,12 +276,12 @@
     self.deleteBtn.frame = messageFrame.deleteF;
     self.deleteBtn.hidden = ![messageFrame.message.friendNick isEqualToString:UserName];
     
-    //7、 点赞按钮
-    self.likeBtn.frame = messageFrame.likeF;
+    //7、 菜单按钮
+    self.menuBtn.frame = messageFrame.menuF;
     
     //8、 点赞列表
     if (message.likeListArr.count) {//是否有点赞
-        
+
         [self addMessageLikeView];
     }
     
@@ -264,6 +299,11 @@
     self.contentTextView.hidden = NO;
     self.contentTextView.frame = self.messageFrame.textF;
     self.contentTextView.text = self.messageFrame.message.messageContent;
+    
+    //折叠
+    self.foldBtn.hidden = NO;
+    [self.foldBtn setTitle:self.messageFrame.message.isFold?@"收起":@"全文" forState:0];
+    self.foldBtn.frame = self.messageFrame.flodF;
 }
 
 #pragma mark 图片视图
@@ -313,174 +353,62 @@
 #pragma mark 点赞视图
 - (void)addMessageLikeView{
     
-    //移除之前的视图
-    for (SHClickTextView *view in self.likeViewArr) {
-        [view removeFromSuperview];
-    }
+    self.likeView.hidden = NO;
+    self.likeView.frame = self.messageFrame.likeF;
     
-    self.likeBGView.hidden = NO;
-    self.likeBGView.frame = self.messageFrame.likeListF;
+    NSMutableArray *linkArr = [[NSMutableArray alloc]init];
     
-    NSString *likeList = [self.messageFrame.message.likeListArr componentsJoinedByString:@"、"];
-    
-    __block NSMutableAttributedString *likeAtt = [[NSMutableAttributedString alloc]initWithString:[NSString stringWithFormat:@" %@",likeList]];
-    
-    //添加点赞图片
-    NSTextAttachment *textAttachment = [[NSTextAttachment alloc]init];
-    textAttachment.image = [UIImage imageNamed:@"like.png"];
-    
-    //位置微调
-    textAttachment.bounds = CGRectMake(0, -2, 15, 15);
-    
-    NSAttributedString *imageStr = [NSAttributedString attributedStringWithAttachment:textAttachment];
-    //替换为图片附件
-    [likeAtt replaceCharactersInRange:NSMakeRange(0, 0) withAttributedString:imageStr];
-    
-    NSMutableArray *rangArr = [[NSMutableArray alloc]init];
-    NSMutableArray *parameterArr = [[NSMutableArray alloc]init];
-    
-    __block NSInteger loc = 2;
+    __block NSInteger loc = 2;//加了点赞图标与空格
     __block NSInteger len = 0;
     //获取范围
     [self.messageFrame.message.likeListArr enumerateObjectsUsingBlock:^(NSString *obj, NSUInteger idx, BOOL * _Nonnull stop) {
         
         len = obj.length;
         
-        [rangArr addObject:[NSValue valueWithRange:NSMakeRange(loc, len)]];
-        
-        [parameterArr addObject:obj];
-        
+        [linkArr addObject:@{@"parameter":obj,
+                             @"range":[NSValue valueWithRange:NSMakeRange(loc, len)]}];
         loc += len+1;
     }];
     
-    SHClickTextView *textView = [[SHClickTextView alloc]initWithFrame:CGRectMake(kLRMargin, kLikeAngleH + kUDMargin, self.messageFrame.likeListF.size.width - 2*kLRMargin, self.messageFrame.likeListF.size.height - 2*kUDMargin - kLikeAngleH)];
-    textView.backgroundColor = [UIColor clearColor];
-    textView.attributedText = likeAtt;
-    textView.font = kContentFont;
-
-    //文字参数
-    NSDictionary *dic = @{NSForegroundColorAttributeName:kRGB(51, 84, 135, 1)};
-    //添加点击
-    [textView addClickWithSupVC:self RangArr:rangArr ParameterArr:parameterArr linkAddAttribute:dic block:^(CGPoint point, SHClickTextView *textView) {
-        
-        textView = self.likeViewArr[0];
-        //查找点击位置
-        [textView.linkArray enumerateObjectsUsingBlock:^(SHClickTextModel * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            
-            for (id rect in obj.rects) {
-                //是否在点击位置
-                if (CGRectContainsPoint([rect CGRectValue], point)) {
-                    
-                    //回调
-                    if ([self.delegate respondsToSelector:@selector(messageUserClick:Message:)]) {
-                        [self.delegate messageUserClick:self Message:obj.parameter];
-                    }
-                    return ;
-                }
-            }
-        }];
-        //点击了空白处
-    }];
-    
-    [self.likeBGView addSubview:textView];
-    self.likeViewArr = @[textView];
+    //找到内容视图
+    for (UIView *view in self.likeView.subviews) {
+        if ([view isKindOfClass:[SHClickTextView class]]) {
+            SHClickTextView *textView = (SHClickTextView *)view;
+            textView.frame = CGRectMake(0, 0, self.likeView.width, self.likeView.height);
+            textView.attributedText = self.messageFrame.likeAtt;
+            textView.linkArr = linkArr;
+            break;
+        }
+    }
 }
 
 #pragma mark 评论视图
 - (void)addMessageCommentView{
     
-    //移除之前的视图
-    for (SHClickTextView *view in self.commentViewArr) {
-        [view removeFromSuperview];
+    self.commentView.hidden = NO;
+    self.commentView.frame = self.messageFrame.commentF;
+    
+    self.commentView.commentArr = self.messageFrame.message.commentArr;
+    
+    NSMutableArray <UITapGestureRecognizer *>*gestArr = [[NSMutableArray alloc]init];
+    for (int i = 0; i < self.commentView.commentArr.count; i++) {
+        UITapGestureRecognizer *tapGest = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(commentClick:)];
+        [gestArr addObject:tapGest];
     }
     
-    self.commentBGView.hidden = NO;
-    self.commentBGView.frame = self.messageFrame.commentF;
+    self.commentView.gestArr = gestArr;
     
-    __block NSInteger loc = 0;
-    __block NSInteger len = 0;
+    [self.commentView reloadView];
     
-    NSMutableArray <SHClickTextView *>*commentViewArr = [[NSMutableArray alloc]init];
-    
-    //获取评论数组
-    [self.messageFrame.message.commentArr enumerateObjectsUsingBlock:^(SHFriendTimeLineComment * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    WeakSelf;
+    //回调
+    self.commentView.block = ^(NSString *parameter, SHClickTextView *textView) {
         
-        //定义内容
-        NSMutableAttributedString *commentAtt;
-        //范围集合
-        NSMutableArray *rangeArr = [[NSMutableArray alloc]init];
-        //参数集合
-        NSMutableArray *parameterArr = [[NSMutableArray alloc]init];
-        
-        len = obj.comment.length;
-        
-        if (obj.replier) {//存在回复人
-            
-            commentAtt = [[NSMutableAttributedString alloc]initWithString:[NSString stringWithFormat:@"%@回复%@:%@",obj.comment,obj.replier,obj.content]];
-            //获取范围
-            NSRange replierRange = {len + 2, obj.replier.length};
-            
-            [rangeArr addObject:[NSValue valueWithRange:replierRange]];
-            [parameterArr addObject:obj.replier];
-        }else{
-            
-            commentAtt = [[NSMutableAttributedString alloc]initWithString:[NSString stringWithFormat:@"%@:%@",obj.comment,obj.content]];
+        //用户点击
+        if ([weakSelf.delegate respondsToSelector:@selector(messageUserClick:message:)]) {
+            [weakSelf.delegate messageUserClick:weakSelf message:parameter];
         }
-        
-        NSRange range = NSMakeRange(loc, len);
-        
-        [rangeArr addObject:[NSValue valueWithRange:range]];
-        [parameterArr addObject:obj.comment];
-        
-        SHClickTextView *textView = [[SHClickTextView alloc]initWithFrame:[self.messageFrame.commentFArr[idx] CGRectValue]];
-        textView.backgroundColor = [UIColor clearColor];
-        
-        textView.attributedText = commentAtt;
-        textView.font = kContentFont;
-        textView.parameter = obj;
-        
-        //文字参数
-        NSDictionary *dic = @{NSForegroundColorAttributeName:kRGB(51, 84, 135, 1)};
-        //添加点击
-        [textView addClickWithSupVC:self RangArr:rangeArr ParameterArr:parameterArr linkAddAttribute:dic block:^(CGPoint point, SHClickTextView *textView) {
-            [self.commentViewArr enumerateObjectsUsingBlock:^(SHClickTextView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                if ([obj isEqual:textView]) {
-                    __block SHClickTextModel *clickTextModel = nil;
-                    
-                    //查找点击位置
-                    [obj.linkArray enumerateObjectsUsingBlock:^(SHClickTextModel * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                        
-                        for (id rect in obj.rects) {
-                            //是否在点击位置
-                            if (CGRectContainsPoint([rect CGRectValue], point)) {
-                                clickTextModel = obj;
-                                *stop = YES;
-                            }
-                        }
-                    }];
-                    
-                    if (clickTextModel) {//存在
-                        
-                        //回调
-                        if ([self.delegate respondsToSelector:@selector(messageUserClick:Message:)]) {
-                            [self.delegate messageUserClick:self Message:clickTextModel.parameter];
-                        }
-                        
-                    }else{
-                        
-                        //回调
-                        if ([self.delegate respondsToSelector:@selector(messageCommentClick:Message:)]) {
-                            SHFriendTimeLineComment *commentModel = textView.parameter;
-                            [self.delegate messageCommentClick:self Message:commentModel];
-                        }
-                    }
-                }
-            }];
-        }];
-        [self.commentBGView addSubview:textView];
-        [commentViewArr addObject:textView];
-    }];
-    self.commentViewArr = commentViewArr;
+    };
 }
 
 @end

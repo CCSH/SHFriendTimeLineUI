@@ -15,7 +15,6 @@
 #import "SHPhotoBrowserViewController.h"
 #import "XJJRefresh.h"
 #import "MJRefresh.h"
-#import "SHCommentInputView.h"
 
 //背景自己
 #define kActionSheet_BackGroup_Me_Tag 1
@@ -25,7 +24,7 @@
 #define kActionSheet_Delete_Tag 3
 
 @interface SHFriendTimeLineViewController ()
-<SHFriendTimeLineCellDelegate,
+<SHFriendTimeLineDelegate,
 SHFriendHeadViewDelegate,
 UIActionSheetDelegate,
 UITableViewDelegate,
@@ -38,8 +37,6 @@ UITableViewDataSource>
 @property (nonatomic, strong) SHFriendHeadView *headerView;
 //FPS
 @property (nonatomic, strong) YYFPSLabel *fpsLabel;
-//评论输入框
-@property (nonatomic, strong) SHCommentInputView *inputView;
 
 //删除评论暂存
 @property (nonatomic, strong) NSDictionary *deleteDic;
@@ -59,19 +56,6 @@ UITableViewDataSource>
         [self.view addSubview:_tableView];
     }
     return _tableView;
-}
-
-- (SHCommentInputView *)inputView{
-    
-    if (!_inputView) {
-        _inputView = [SHCommentInputView sharedSHCommentInputView];
-        _inputView.frame = CGRectMake(0, kSHHeight, kSHWidth, 50);
-        [_inputView reloadView];
-        [self.view addSubview:_inputView];
-        [self.view bringSubviewToFront:_inputView];
-    }
-    
-    return _inputView;
 }
 
 - (void)viewDidLoad {
@@ -115,19 +99,8 @@ UITableViewDataSource>
 #pragma mark 配置导航栏
 - (void)setupNav{
     
-    switch (self.type) {
-        case SHFriendTimeLineViewType_All://所有
-        {
-            UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera target:self action:@selector(rightClick)];
-            self.navigationItem.rightBarButtonItem = item;
-        }
-            break;
-        case SHFriendTimeLineViewType_One://个人
-            
-            break;
-        default:
-            break;
-    }
+    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera target:self action:@selector(rightClick)];
+    self.navigationItem.rightBarButtonItem = item;
     
 }
 
@@ -154,79 +127,65 @@ UITableViewDataSource>
 #pragma mark - 配置刷新、加载
 - (void)setRefresh{
     
-    self.tableView.mj_footer = [MJRefreshAutoNormalFooter footerWithRefreshingTarget:self refreshingAction:@selector(loadOldData)];
+    self.tableView.mj_footer = [MJRefreshBackNormalFooter footerWithRefreshingBlock:^{
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self loadOldData];
+        });
+    }];
+
+    UIImageView *refreshView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, 30, 30)];
+    refreshView.image = [UIImage imageNamed:@"refresh_icon@2x.png"];
     
-    switch (self.type) {
-        case SHFriendTimeLineViewType_All://所有
-        {
-            UIImageView *refreshView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, 30, 30)];
-            refreshView.image = [UIImage imageNamed:@"refresh_icon@2x.png"];
+    XJJHolyCrazyHeader *crazyRefresh = [XJJHolyCrazyHeader holyCrazyCustomHeaderWithCustomContentView:refreshView];
+    crazyRefresh.startPosition = CGPointMake(20, (44 + kStatusBarH) - 32);
+    crazyRefresh.refreshingPosition = CGPointMake(20,150);
+    
+    __weak typeof(self) weakSelf = self;
+    [self.tableView add_xjj_refreshHeader:crazyRefresh refreshBlock:^{
+        
+        [weakSelf.tableView setRefreshState:XJJRefreshStateIdle];
+        
+        [weakSelf.tableView replace_xjj_refreshBlock:^{
             
-            XJJHolyCrazyHeader *crazyRefresh = [XJJHolyCrazyHeader holyCrazyCustomHeaderWithCustomContentView:refreshView];
-            crazyRefresh.startPosition = CGPointMake(20, (44 + kStatusBarH) - 32);
-            crazyRefresh.refreshingPosition = CGPointMake(20,150);
-            
-            __weak typeof(self) weakSelf = self;
-            [self.tableView add_xjj_refreshHeader:crazyRefresh refreshBlock:^{
-                
-                [weakSelf.tableView setRefreshState:XJJRefreshStateIdle];
-                
-                [weakSelf.tableView replace_xjj_refreshBlock:^{
-                    
-                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                         [weakSelf loadNewData];
-                    });
-                   
-                }];
-            }];
-        }
-            break;
-        case SHFriendTimeLineViewType_One://个人
-        {
-            [self.tableView.mj_footer beginRefreshing];
-        }
-            break;
-        default:
-            break;
-    }
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                 [weakSelf loadNewData];
+            });
+        }];
+    }];
 }
 
 #pragma mark - 刷新数据
 - (void)loadNewData{
     NSLog(@"刷新数据");
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         
-        NSArray *temp = [self getFriendDataWithNum:5];
-        
-        for (SHFriendTimeLineFrame *model in temp) {
-            [self.dataSoure insertObject:model atIndex:0];
-        }
-        
-        
-        [self.tableView reloadData];
-        
-        [self.tableView end_xjj_refresh];
-        
-    });
+    NSArray *temp = [self getFriendDataWithNum:5];
+    
+    for (SHFriendTimeLineFrame *model in temp) {
+        [self.dataSoure insertObject:model atIndex:0];
+    }
+    
+    [self.tableView reloadData];
+    
+    [self.tableView end_xjj_refresh];
 }
 
 #pragma mark - 加载数据
 - (void)loadOldData{
     NSLog(@"加载数据");
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    
+    NSArray *temp = [self getFriendDataWithNum:5];
+    
+    for (SHFriendTimeLineFrame *model in temp) {
         
-        NSArray *temp = [self getFriendDataWithNum:5];
-        
-        for (SHFriendTimeLineFrame *model in temp) {
-            [self.dataSoure insertObject:model atIndex:0];
-        }
-        
-        
-        [self.tableView reloadData];
-        
-        [self.tableView.mj_footer endRefreshing];
-        
-    });
+        [self.dataSoure addObject:model];
+    }
+    
+    [self.tableView reloadData];
+    
+    //滚动到指定位置
+    [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.dataSoure.count - temp.count - 1 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+    
+    [self.tableView.mj_footer endRefreshing];
 }
 
 #pragma mark - 导航栏点击
@@ -256,20 +215,6 @@ UITableViewDataSource>
         SHFriendTimeLine *message = [self getFriendDataWithIndex:arc4random() % 9];
         SHFriendTimeLineFrame *messageFrame = [[SHFriendTimeLineFrame alloc]init];
         messageFrame.message = message;
-        
-        switch (self.type) {
-            case SHFriendTimeLineViewType_All://所有
-            {
-                
-            }
-                break;
-            case SHFriendTimeLineViewType_One:
-            {
-                messageFrame.message.friendNick = self.userInfo;
-            }
-            default:
-                break;
-        }
         
         [temp addObject:messageFrame];
     }
@@ -411,7 +356,7 @@ UITableViewDataSource>
             model.friendNick = @"呵呵";
             model.friendAvatar = [NSString stringWithFormat:@"icon%u.jpg",arc4random() % 5];
             model.messageTime = @"2016-1-1";
-            model.messageContent = @"测试asdf空间撒谎对方立刻就杀掉了开发计划来刷卡单交话费了空间撒谎的弗兰克季后赛度凤凰网";
+            model.messageContent = @"测试asdf空间撒谎对方立刻就杀掉了开发计划来刷卡单交话费了空间撒谎的弗兰克季后赛度凤凰网测试asdf空间撒谎对方立刻就杀掉了开发计划来刷卡单交话费了空间撒谎的弗兰克季后赛度凤凰网测试asdf空间撒谎对方立刻就杀掉了开发计划来刷卡单交话费了空间撒谎的弗兰克季后赛度凤凰网测试asdf空间撒谎对方立刻就杀掉了开发计划来刷卡单交话费了空间撒谎的弗兰克季后赛度凤凰网测试asdf空间撒谎对方立刻就杀掉了开发计划来刷卡单交话费了空间撒谎的弗兰克季后赛度凤凰网测试asdf空间撒谎对方立刻就杀掉了开发计划来刷卡单交话费了空间撒谎的弗兰克季后赛度凤凰网测试asdf空间撒谎对方立刻就杀掉了开发计划来刷卡单交话费了空间撒谎的弗兰克季后赛度凤凰网测试asdf空间撒谎对方立刻就杀掉了开发计划来刷卡单交话费了空间撒谎的弗兰克季后赛度凤凰网";
             model.likeListArr = @[@"那啥",@"小红",@"skt",@"213456787654324567865432"];
             
             SHFriendTimeLineComment *comment = [[SHFriendTimeLineComment alloc]init];
@@ -469,9 +414,7 @@ UITableViewDataSource>
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
     //移除点赞
-    [[SHLikeAndCommentView shareSHLikeAndCommentView] removeFromSuperview];
-    //关闭输入框
-    [self.inputView hideCommentInput];
+    [[SHTimeLineMenu shareSHTimeLineMenu] removeFromSuperview];
 }
 
 #pragma mark - UIActionSheetDelegate
@@ -556,7 +499,7 @@ UITableViewDataSource>
         case SHFriendHeadClickType_Avatar://头像
         {
             NSLog(@"头部视图===头像点击");
-            [self messageUserClick:nil Message:UserName];
+            [self messageUserClick:nil message:UserName];
         }
             break;
         case SHFriendHeadClickType_Background://背景
@@ -581,36 +524,47 @@ UITableViewDataSource>
     }
 }
 
-#pragma mark - SHFriendTimeLineCellDelegate
+#pragma mark - SHFriendTimeLineDelegate
 #pragma mark 消息体功能点击
-- (void)messageClick:(SHFriendTimeLineTableViewCell *)cell Message:(SHFriendTimeLineFrame *)message ClickType:(SHFriendTimeLineClickType)clickType{
+- (void)messageClick:(SHFriendTimeLineTableViewCell *)cell type:(SHFriendTimeLineClickType)type{
     
-    //移除点赞
-    [[SHLikeAndCommentView shareSHLikeAndCommentView] removeFromSuperview];
-    //关闭输入框
-    [self.inputView hideCommentInput];
+    //移除菜单
+    [[SHTimeLineMenu shareSHTimeLineMenu] removeFromSuperview];
     
-    switch (clickType) {
-        case SHFriendTimeLineClickType_open://展开
+    switch (type) {
+        case SHFriendTimeLineClickType_fold://展开
         {
-            NSLog(@"点击了====展开");
+            NSLog(@"点击了====折叠");
+            //取出数据
+            SHFriendTimeLine *message = cell.messageFrame.message;
+            message.isFold = !message.isFold;
+            SHFriendTimeLineFrame *messageFrame = cell.messageFrame;
+            messageFrame.message = message;
+            
+            NSIndexPath *index = [self.tableView indexPathForCell:cell];
+            [self.dataSoure replaceObjectAtIndex:index.row withObject:messageFrame];
+            
+            [self.tableView beginUpdates];
+            [self.tableView reloadRowsAtIndexPaths:@[index] withRowAnimation:UITableViewRowAnimationFade];
+            [self.tableView endUpdates];
         }
             break;
         case SHFriendTimeLineClickType_delete://删除
         {
             NSLog(@"点击了====删除");
-            [self.dataSoure removeObject:message];
-            [self.tableView reloadData];
+            [self.dataSoure removeObject:cell.messageFrame];
+            NSIndexPath *index = [self.tableView indexPathForCell:cell];
+            [self.tableView deleteRowsAtIndexPaths:@[index] withRowAnimation:UITableViewRowAnimationFade];
         }
             break;
-        case SHFriendTimeLineClickType_like_comment://点赞
+        case SHFriendTimeLineClickType_menu://菜单
         {
-            NSLog(@"点击了====点赞");
+            NSLog(@"点击了====菜单");
             
             __block BOOL isLike = NO;
             
             //查看点赞列表是否有自己
-            for (NSString *obj in message.message.likeListArr) {
+            for (NSString *obj in cell.messageFrame.message.likeListArr) {
                 if ([obj isEqualToString:UserName]) {//存在自己
                     isLike = YES;
                     break;
@@ -618,25 +572,27 @@ UITableViewDataSource>
             }
             
             //点击位置
-            NSInteger index = [self.dataSoure indexOfObject:message];
+            NSInteger index = [self.dataSoure indexOfObject:cell.messageFrame];
             
+            SHTimeLineMenu *menu = [SHTimeLineMenu shareSHTimeLineMenu];
+            menu.center = CGPointMake(0, cell.menuBtn.centerY);
+            menu.x = CGRectGetMidX(cell.messageFrame.menuF) - menu.width - 15;
+            [cell.contentView addSubview:menu];
             WeakSelf;
-            [[SHLikeAndCommentView shareSHLikeAndCommentView] showSHLikeAndCommentWithSupVc:cell Frame:message.likeF isLike:isLike Block:^(NSInteger type) {
+            [menu showMenuIsLike:isLike block:^(NSInteger type) {
                 
                 //重新设置内容
                 SHFriendTimeLine *model = [[SHFriendTimeLine alloc]init];
-                model = message.message;
+                model = cell.messageFrame.message;
                 
                 switch (type) {
                     case 1:
                     {
                         NSLog(@"点赞");
-                
                         //构建消息内容
-                        NSMutableArray *messageArr = [NSMutableArray arrayWithArray:message.message.likeListArr];
+                        NSMutableArray *messageArr = [NSMutableArray arrayWithArray:cell.messageFrame.message.likeListArr];
                         
                         if (isLike) {//点过赞了
-                            
                             [messageArr removeObject:UserName];
                         }else{
                             
@@ -645,76 +601,24 @@ UITableViewDataSource>
                         
                         model.likeListArr = messageArr;
                         
+                        //更新数据
+                        SHFriendTimeLineFrame *messgerFrame = [[SHFriendTimeLineFrame alloc]init];
+                        messgerFrame.message = model;
+                        [weakSelf.dataSoure replaceObjectAtIndex:index withObject:messgerFrame];
+                        //进行刷新
+                        [weakSelf.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
                     }
                         break;
                     case 2:
                     {
-                        NSLog(@"评论");
-                        [self.inputView showCommentInput];
-
-                        self.inputView.block = ^(NSString *text,id obj){
-                            
-                            [weakSelf.inputView hideCommentInput];
-                            //构建消息内容
-                            NSMutableArray <SHFriendTimeLineComment *>*messageArr = [NSMutableArray arrayWithArray:message.message.commentArr];
-                            //添加评论
-                            SHFriendTimeLineComment *comment = [[SHFriendTimeLineComment alloc]init];
-                            comment.comment = UserName;
-                            comment.content = text;
-                            [messageArr addObject:comment];
-                            
-                            model.commentArr = messageArr;
-                            
-                            //添加内容
-                            message.message = model;
-                            [weakSelf.dataSoure replaceObjectAtIndex:index withObject:message];
-                            //进行刷新
-                            [weakSelf.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
-                        };
+                        UIAlertView *ale = [[UIAlertView alloc]initWithTitle:@"用户点击" message:@"点击了正文评论" delegate:nil cancelButtonTitle:@"我知道了" otherButtonTitles:nil, nil];
+                        [ale show];
                     }
                         break;
                     default:
                         break;
                 }
-                
-                //添加内容
-                message.message = model;
-                [weakSelf.dataSoure replaceObjectAtIndex:index withObject:message];
-                //进行刷新
-                [weakSelf.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
             }];
-        }
-            break;
-        case SHFriendTimeLineClickType_comment://评论
-        {
-            //点击位置
-            NSInteger index = [self.dataSoure indexOfObject:message];
-            //重新设置内容
-            SHFriendTimeLine *model = [[SHFriendTimeLine alloc]init];
-            model = message.message;
-            
-            [self.inputView showCommentInput];
-            
-            WeakSelf
-            self.inputView.block = ^(NSString *text, id obj){
-                
-                [weakSelf.inputView hideCommentInput];
-                //构建消息内容
-                NSMutableArray <SHFriendTimeLineComment *>*messageArr = [NSMutableArray arrayWithArray:message.message.commentArr];
-                //添加评论
-                SHFriendTimeLineComment *comment = [[SHFriendTimeLineComment alloc]init];
-                comment.comment = UserName;
-                comment.content = text;
-                [messageArr addObject:comment];
-                
-                model.commentArr = messageArr;
-                
-                //添加内容
-                message.message = model;
-                [weakSelf.dataSoure replaceObjectAtIndex:index withObject:message];
-                //进行刷新
-                [weakSelf.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
-            };
         }
             break;
         default:
@@ -723,38 +627,23 @@ UITableViewDataSource>
 }
 
 #pragma mark 用户点击
-- (void)messageUserClick:(SHFriendTimeLineTableViewCell *)cell Message:(NSString *)message{
+- (void)messageUserClick:(SHFriendTimeLineTableViewCell *)cell message:(NSString *)message{
     
     //移除点赞
-    [[SHLikeAndCommentView shareSHLikeAndCommentView] removeFromSuperview];
-    //关闭输入框
-    [self.inputView hideCommentInput];
+    [[SHTimeLineMenu shareSHTimeLineMenu] removeFromSuperview];
     
-    SHFriendTimeLineViewController *view = [[SHFriendTimeLineViewController alloc]init];
-    view.type = SHFriendTimeLineViewType_One;
-    view.userInfo = message;
-    [self.navigationController pushViewController:view animated:YES];
+    UIAlertView *ale = [[UIAlertView alloc]initWithTitle:@"用户点击" message:message delegate:nil cancelButtonTitle:@"我知道了" otherButtonTitles:nil, nil];
+    [ale show];
 }
 
 #pragma mark 回复点击
-- (void)messageCommentClick:(SHFriendTimeLineTableViewCell *)cell Message:(SHFriendTimeLineComment *)message{
+- (void)messageCommentClick:(SHFriendTimeLineTableViewCell *)cell message:(SHFriendTimeLineComment *)message{
     
     //移除点赞
-    [[SHLikeAndCommentView shareSHLikeAndCommentView] removeFromSuperview];
-    //关闭输入框
-    [self.inputView hideCommentInput];
-    
-    //点击位置
-    NSInteger index = [self.dataSoure indexOfObject:cell.messageFrame];
+    [[SHTimeLineMenu shareSHTimeLineMenu] removeFromSuperview];
+
     //拿出原始数据
     SHFriendTimeLineFrame *messageFrame = cell.messageFrame;
-    
-    //重新设置内容
-    SHFriendTimeLine *model = [[SHFriendTimeLine alloc]init];
-    model = messageFrame.message;
-    
-    //构建消息内容
-    NSMutableArray <SHFriendTimeLineComment *>*messageArr = [NSMutableArray arrayWithArray:messageFrame.message.commentArr];
     
     //判断是否为自己
     if ([message.comment isEqualToString:UserName]) {//是自己
@@ -765,37 +654,17 @@ UITableViewDataSource>
         [sheet showInView:self.view];
         
     }else{
-        
-        self.inputView.placeholder = [NSString stringWithFormat:@"回复 %@:",message.comment];
-        [self.inputView showCommentInput];
-        WeakSelf
-        self.inputView.block = ^(NSString *text, id obj){
-            [weakSelf.inputView hideCommentInput];
-            SHFriendTimeLineComment *comment = [[SHFriendTimeLineComment alloc]init];
-            comment.comment = UserName;
-            comment.replier = message.comment;
-            comment.content = text;
-            [messageArr addObject:comment];
-            
-            model.commentArr = messageArr;
-            
-            //添加内容
-            messageFrame.message = model;
-            [weakSelf.dataSoure replaceObjectAtIndex:index withObject:messageFrame];
-            //进行刷新
-            [weakSelf.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
-        };
+        UIAlertView *ale = [[UIAlertView alloc]initWithTitle:@"用户点击" message:@"点击了内容评论" delegate:nil cancelButtonTitle:@"我知道了" otherButtonTitles:nil, nil];
+        [ale show];
     }
 }
 
 #pragma mark 图片点击
-- (void)imageClick:(SHFriendTimeLineTableViewCell *)cell Message:(SHFriendTimeLineFrame *)message Index:(NSInteger)index{
+- (void)imageClick:(SHFriendTimeLineTableViewCell *)cell message:(SHFriendTimeLineFrame *)message index:(NSInteger)index{
     
     NSLog(@"点击了====图片%ld",(long)index);
     //移除点赞
-    [[SHLikeAndCommentView shareSHLikeAndCommentView] removeFromSuperview];
-    //关闭输入框
-    [self.inputView hideCommentInput];
+    [[SHTimeLineMenu shareSHTimeLineMenu] removeFromSuperview];
     
     NSMutableArray *imageArr = [[NSMutableArray alloc]init];
     

@@ -14,8 +14,6 @@
  */
 @interface SHFriendTimeLineViewController : UIViewController
 
-//界面类型
-@property (nonatomic, assign) SHFriendTimeLineViewType type;
 //用户信息
 @property (nonatomic, copy) NSString *userInfo;
 

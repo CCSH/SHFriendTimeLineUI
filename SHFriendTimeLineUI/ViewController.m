@@ -28,10 +28,8 @@
 //进入朋友圈
 - (IBAction)btnClick:(id)sender {
     SHFriendTimeLineViewController *view = [[SHFriendTimeLineViewController alloc]init];
-    view.type = SHFriendTimeLineViewType_All;
     view.userInfo = @"那啥";
     [self.navigationController pushViewController:view animated:YES];
 }
-
 
 @end

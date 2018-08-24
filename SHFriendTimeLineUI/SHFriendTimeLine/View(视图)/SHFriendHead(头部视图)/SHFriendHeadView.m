@@ -18,7 +18,6 @@
 //背景
 @property (nonatomic, strong) UIImageView *backgroundImageView;
 
-
 @end
 
 @implementation SHFriendHeadView

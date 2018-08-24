@@ -24,7 +24,7 @@
 //文本内容(如果图文混排可以用NSAttributedString)
 @property (nonatomic, copy) NSString *messageContent;
 //全文按钮(展开、收起)
-@property (nonatomic, assign) BOOL isOpen;
+@property (nonatomic, assign) BOOL isFold;
 //图片信息数组
 @property (nonatomic, copy) NSArray *messageImageArr;
 //发送时间
