@@ -1,6 +1,5 @@
 SHFriendTimeLineUI 仿微信朋友圈
 > 使用中如果有其他问题可以[`告诉我`](https://github.com/CCSH/SHFriendTimeLineUI/issues/new)
-===
 - [x] 发布动态
 - [x] 查看动态
 - [x] 图片预览
